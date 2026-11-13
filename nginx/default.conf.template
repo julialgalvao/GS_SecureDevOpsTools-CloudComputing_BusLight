@@ -1,0 +1,39 @@
+# BusLight - nginx na frente do app
+# O ${METRICS_TOKEN} é preenchido pela imagem oficial do nginx (envsubst) na hora de subir.
+
+# limite de requisições por IP para segurar abuso e robôs
+limit_req_zone $binary_remote_addr zone=por_ip:10m rate=10r/s;
+
+server {
+    listen 80;
+    server_name _;
+    server_tokens off;
+    client_max_body_size 16k;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "geolocation=(self), camera=(), microphone=()" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+
+    location = /metrics {
+        # só o Prometheus, com o token, lê as métricas
+        if ($http_authorization != "Bearer ${METRICS_TOKEN}") {
+            return 401;
+        }
+        proxy_pass http://app:8000;
+    }
+
+    location / {
+        limit_req zone=por_ip burst=30 nodelay;
+        proxy_pass http://app:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 15s;
+    }
+}

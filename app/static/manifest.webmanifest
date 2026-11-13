@@ -1,0 +1,11 @@
+{
+  "name": "BusLight",
+  "short_name": "BusLight",
+  "description": "Saiba quando o ônibus chega e espere menos no ponto.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1F3A5F",
+  "icons": [{ "src": "/static/icone.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

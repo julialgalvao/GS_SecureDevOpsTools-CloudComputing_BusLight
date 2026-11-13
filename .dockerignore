@@ -1,0 +1,14 @@
+.git
+.github
+.devcontainer
+.venv
+**/__pycache__
+**/*.pyc
+.env
+*.env
+infra
+monitoring
+nginx
+tests
+docs
+*.md

@@ -1,0 +1,32 @@
+groups:
+  - name: buslight
+    rules:
+      - alert: BusLightFora
+        expr: up{job="buslight"} == 0
+        for: 1m
+        labels:
+          severidade: critica
+        annotations:
+          resumo: "O BusLight está fora do ar"
+          descricao: "O Prometheus não consegue coletar métricas de {{ $labels.instance }} há mais de 1 minuto."
+
+      - alert: BusLightErrosAltos
+        expr: |
+          sum(rate(http_requests_total{job="buslight", status=~"5.."}[2m]))
+            / sum(rate(http_requests_total{job="buslight"}[2m])) > 0.05
+        for: 2m
+        labels:
+          severidade: alta
+        annotations:
+          resumo: "Mais de 5% das requisições com erro"
+          descricao: "Taxa de respostas 5xx acima de 5% (ex.: API da SPTrans indisponível)."
+
+      - alert: BusLightLento
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job="buslight"}[5m]))) > 1
+        for: 5m
+        labels:
+          severidade: media
+        annotations:
+          resumo: "BusLight lento"
+          descricao: "95% das requisições estão levando mais de 1 segundo."

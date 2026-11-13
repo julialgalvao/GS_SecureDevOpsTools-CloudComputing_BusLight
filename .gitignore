@@ -1,0 +1,25 @@
+# segredos
+.env
+*.env
+!.env.example
+
+# terraform: state e variáveis ficam fora do repositório
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/*.tfvars
+!infra/terraform.tfvars.example
+infra/.terraform.lock.hcl.bak
+crash.log
+
+# monitoramento (gerados pelo iniciar.sh)
+monitoring/prometheus/targets/*.json
+monitoring/prometheus/metrics_token
+monitoring/.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
