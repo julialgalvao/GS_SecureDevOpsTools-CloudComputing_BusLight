@@ -70,7 +70,7 @@ def test_chegada_ao_vivo(monkeypatch):
     assert resp.json()["hora_consulta"] == "22:00"
 
 
-@pytest.mark.parametrize("rota", ["/api/alertas?limite=20", "/api/alertas/U0001"])
+@pytest.mark.parametrize("rota", ["/api/alertas", "/api/alertas/U0001"])
 def test_telefone_nunca_aparece_completo(rota):
     # LGPD: a API só pode devolver o telefone mascarado, nunca o número nem o hash
     dados = cliente.get(rota).json()
@@ -78,6 +78,13 @@ def test_telefone_nunca_aparece_completo(rota):
     for u in usuarios:
         assert "telefone" not in u and "telefone_hash" not in u
         assert re.fullmatch(r"\(\d{2}\) \*{5}-\d{4}", u["telefone_mascarado"])
+
+
+def test_cadastro_fora_da_demo_nao_e_exposto():
+    # OWASP A01: não dá para listar o cadastro trocando o id na URL
+    fora = [i for i in main.usuarios if i not in main.demo][0]
+    assert cliente.get(f"/api/alertas/{fora}").status_code == 404
+    assert len(cliente.get("/api/alertas").json()) == main.USUARIOS_DEMO
 
 
 def test_metricas_de_ouro():

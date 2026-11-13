@@ -380,12 +380,65 @@
       ]
     },
     {
+      "id": 10,
+      "type": "timeseries",
+      "title": "4b. Saturação da EC2 (node-exporter)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "CPU, memória e disco da máquina",
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 24,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "max": 1,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "1 - avg(rate(node_cpu_seconds_total{job=\"ec2\",mode=\"idle\"}[5m]))",
+          "legendFormat": "CPU"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "1 - node_memory_MemAvailable_bytes{job=\"ec2\"} / node_memory_MemTotal_bytes{job=\"ec2\"}",
+          "legendFormat": "Memória"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "1 - node_filesystem_avail_bytes{job=\"ec2\",mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"ec2\",mountpoint=\"/\"}",
+          "legendFormat": "Disco"
+        }
+      ]
+    },
+    {
       "id": 9,
       "type": "alertlist",
       "title": "Alertas",
       "gridPos": {
         "x": 0,
-        "y": 20,
+        "y": 28,
         "w": 24,
         "h": 6
       },

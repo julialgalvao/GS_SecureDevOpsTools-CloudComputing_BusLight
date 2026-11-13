@@ -27,6 +27,14 @@ server {
         proxy_pass http://app:8000;
     }
 
+    location = /node-metrics {
+        # métricas da EC2 (node-exporter), com o mesmo token; a porta 9100 nunca fica exposta
+        if ($http_authorization != "Bearer ${METRICS_TOKEN}") {
+            return 401;
+        }
+        proxy_pass http://node-exporter:9100/metrics;
+    }
+
     location / {
         limit_req zone=por_ip burst=30 nodelay;
         proxy_pass http://app:8000;

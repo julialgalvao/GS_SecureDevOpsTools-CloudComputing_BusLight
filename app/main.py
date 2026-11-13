@@ -50,6 +50,11 @@ saia_por_ponto = defaultdict(list)
 for linha in saia:
     saia_por_ponto[linha["codigo_parada"]].append(linha)
 
+# a tela "Meus alertas" do MVP usa só usuários de demonstração; o resto do cadastro não é
+# exposto pela API (evita IDOR / OWASP A01). Em produção o acesso seria com login.
+USUARIOS_DEMO = 8
+demo = dict(list(usuarios.items())[:USUARIOS_DEMO])
+
 sptrans = ClienteSPTrans()
 
 app = FastAPI(title="BusLight", version="1.0.0", docs_url=None, redoc_url=None)
@@ -154,14 +159,14 @@ def saia_de_casa(
 
 
 @app.get("/api/alertas")
-def alertas_exemplo(limite: int = Query(default=5, ge=1, le=20)):
+def alertas_exemplo():
     # usuários do cadastro simulado; o telefone já chega mascarado da Ouro
-    return list(usuarios.values())[:limite]
+    return list(demo.values())
 
 
 @app.get("/api/alertas/{id_usuario}")
 def alerta(id_usuario: str):
-    usuario = usuarios.get(id_usuario)
+    usuario = demo.get(id_usuario)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     ponto = pontos.get(usuario["sk_ponto_favorito"])

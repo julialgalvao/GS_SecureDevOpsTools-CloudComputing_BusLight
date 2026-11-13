@@ -15,3 +15,14 @@ scrape_configs:
     file_sd_configs:
       - files:
           - /etc/prometheus/targets/*.json
+
+  # node-exporter da EC2, exposto pelo nginx em /node-metrics
+  - job_name: ec2
+    metrics_path: /node-metrics
+    scheme: http
+    authorization:
+      type: Bearer
+      credentials_file: /etc/prometheus/metrics_token
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/*.json

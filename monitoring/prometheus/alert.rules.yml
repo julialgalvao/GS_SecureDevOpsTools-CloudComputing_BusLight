@@ -30,3 +30,15 @@ groups:
         annotations:
           resumo: "BusLight lento"
           descricao: "95% das requisições estão levando mais de 1 segundo."
+
+      - alert: EC2Saturada
+        expr: |
+          (1 - avg(rate(node_cpu_seconds_total{job="ec2", mode="idle"}[5m]))) > 0.9
+            or (1 - node_memory_MemAvailable_bytes{job="ec2"} / node_memory_MemTotal_bytes{job="ec2"}) > 0.9
+            or (1 - node_filesystem_avail_bytes{job="ec2", mountpoint="/"} / node_filesystem_size_bytes{job="ec2", mountpoint="/"}) > 0.85
+        for: 5m
+        labels:
+          severidade: alta
+        annotations:
+          resumo: "EC2 perto do limite"
+          descricao: "CPU ou memória acima de 90%, ou disco acima de 85%."

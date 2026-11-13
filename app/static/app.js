@@ -230,7 +230,7 @@ async function carregarLinhas() {
 
 // ---------------------------------------------------------------- alertas
 async function carregarAlertas() {
-  const { ok, dados } = await api("/api/alertas?limite=8");
+  const { ok, dados } = await api("/api/alertas");
   if (!ok) return;
   const select = document.getElementById("usuario");
   dados.forEach((u) => {

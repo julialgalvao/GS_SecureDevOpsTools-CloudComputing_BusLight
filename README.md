@@ -188,44 +188,52 @@ Workflow em [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml)
 |---|---|---|
 | 1. Segredos | **Gitleaks** | Encontra token, chave ou senha no código ou no histórico |
 | 2. Código (SAST) | **Semgrep** (`p/security-audit`, `p/python`, `p/dockerfile`) | Encontra padrão de código vulnerável |
-| 3. Testes | **pytest** (12 testes da API, incluindo LGPD) | Algum teste falha |
+| 3. Testes | **pytest** (13 testes da API, incluindo LGPD e controle de acesso) | Algum teste falha |
 | 4. Infra como código | **Trivy** (scan de configuração) | Terraform ou Dockerfile com configuração insegura `HIGH`/`CRITICAL` |
-| 5. Build | Docker Buildx | A imagem não compila |
-| 6. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
-| 7. Publicação | GHCR (tag com o SHA do commit + `latest`) | — |
-| 8. Deploy automático | AWS SSM `send-command` + teste de fumaça em `/health` | O app não responde depois do deploy |
+| 5. Terraform | `terraform fmt -check` e `terraform validate` | Código da infra mal formatado ou inválido |
+| 6. Build | Docker Buildx | A imagem não compila |
+| 7. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
+| 8. Publicação | GHCR (tag com o SHA do commit + `latest`) | — |
+| 9. Deploy automático | AWS SSM `send-command` + teste de fumaça em `/health` | O app não responde depois do deploy |
 
-As etapas 1 a 4 rodam em paralelo; build, publicação e deploy só acontecem se todas passarem, e publicação/deploy só na branch `main`.
+As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se todas passarem, e publicação/deploy só na branch `main`.
 
 **Detalhes de segurança a mais no pipeline:** todas as GitHub Actions estão fixadas pelo **SHA do commit** (não por tag, que pode ser alterada), permissões mínimas (`contents: read`; `packages: write` só no job da imagem) e **Dependabot** semanal para dependências Python, imagem base e actions.
 
 **Segredos do pipeline** em **GitHub Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (credenciais temporárias do AWS Academy, renovadas a cada sessão do lab), `AWS_REGION`, `EC2_INSTANCE_ID`, `SPTRANS_TOKEN`, `METRICS_TOKEN`.
 
 **Execução barrada e corrigida (evidência):**
-1. Um commit com um token falso da SPTrans no código → **Gitleaks barra** o pipeline.
-2. O token é removido e passa a vir do GitHub Secrets → pipeline **verde** e deploy realizado.
+1. Na branch `prova/token-vazado`, um commit coloca um token falso da SPTrans direto no código → **Gitleaks barra** o pipeline e nada é publicado.
+2. O commit seguinte troca o valor fixo por `os.getenv("SPTRANS_TOKEN")` (o token real fica no GitHub Secrets) → pipeline **verde**.
+3. Num vazamento real, apagar o arquivo não basta: o token continua no histórico do Git, então ele é **revogado** no portal da SPTrans e um novo é gerado.
 
 ---
 
 ## 📈 Observabilidade
 
-Prometheus e Grafana rodam localmente (`monitoring/docker-compose.yml`), coletando `/metrics` da URL pública do MVP.
+Prometheus e Grafana rodam localmente ou no GitHub Codespaces (`monitoring/docker-compose.yml`), coletando da URL pública do MVP:
+- `/metrics` – métricas do app (FastAPI);
+- `/node-metrics` – métricas da EC2 pelo **node-exporter** (CPU, memória e disco da máquina).
+
+As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca ficam expostas na internet.
 
 **As 4 métricas de ouro**
 
 | Métrica | Medida no BusLight | Consulta (PromQL) |
 |---|---|---|
-| **Latência** | Tempo de resposta da API (p95) | `histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))` |
-| **Tráfego** | Requisições por segundo | `sum(rate(http_requests_total[5m]))` |
-| **Erros** | % de respostas 5xx | `sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))` |
-| **Saturação** | CPU e memória do processo | `rate(process_cpu_seconds_total[5m])`, `process_resident_memory_bytes` |
+| **Latência** | Tempo de resposta da API (p50 e p95) | `histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))` |
+| **Tráfego** | Requisições por segundo, por rota | `sum by (route) (rate(http_requests_total[5m]))` |
+| **Erros** | % de respostas 5xx e falhas na SPTrans | `sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))` |
+| **Saturação** | CPU e memória do app e CPU, memória e disco da EC2 | `process_resident_memory_bytes`, `1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))` |
 
-**Alertas**
+**Alertas** ([`alert.rules.yml`](monitoring/prometheus/alert.rules.yml))
 
 | Alerta | Condição | Como é demonstrado |
 |---|---|---|
 | `BusLightFora` | `up == 0` por 1 minuto | Parar o container do app e ver o alerta disparar |
 | `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Simular falha da API SPTrans |
+| `BusLightLento` | p95 acima de 1 s por 5 minutos | — |
+| `EC2Saturada` | CPU ou memória acima de 90%, ou disco acima de 85%, por 5 minutos | — |
 
 ---
 
@@ -285,10 +293,13 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 
 | Extra | Por que importa |
 |---|---|
-| Testes automatizados no pipeline (12 testes, incluindo um que garante que o telefone nunca sai sem máscara) | O deploy só acontece se a API funciona e respeita a LGPD |
+| Testes automatizados no pipeline (13 testes: o telefone nunca sai sem máscara e o cadastro não pode ser listado trocando o id na URL — OWASP A01) | O deploy só acontece se a API funciona e respeita a LGPD |
 | Trivy também no Terraform e no Dockerfile, com exceções justificadas | A infraestrutura passa pela mesma barreira de segurança que o código |
 | Actions fixadas por SHA, permissões mínimas e Dependabot | Protege o próprio pipeline contra ataques de cadeia de suprimentos |
 | Teste de fumaça depois do deploy | O pipeline só fica verde se o MVP responde na URL pública |
+| `terraform fmt` e `terraform validate` no pipeline | A infra é checada a cada push, igual ao código |
+| node-exporter na EC2 (pelo nginx, com token) | Saturação da máquina inteira, não só do processo do app |
+| Sem SSH: em vez de restringir a porta 22 a um IP, ela nem existe; administração pelo SSM | Menos superfície de ataque |
 | nginx com CSP, cabeçalhos de segurança, limite de requisições e `/metrics` protegido por token | Endurecimento da aplicação exposta na internet |
 | Container somente leitura, sem capabilities, IMDSv2 e disco criptografado | Reduz o estrago se algo for comprometido |
 | Dashboard do Grafana e alertas versionados como código | Monitoramento reproduzível |
@@ -307,7 +318,7 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 │   ├── static/                    # front-end acessível (PWA, funciona offline) + Leaflet
 │   ├── data/                      # exportação JSON da camada Ouro (repositório de Dados)
 │   └── requirements.txt
-├── tests/test_app.py              # 12 testes da API (rodam no pipeline)
+├── tests/test_app.py              # 13 testes da API (rodam no pipeline)
 ├── infra/
 │   ├── versions.tf                # provider AWS e tags padrão
 │   ├── main.tf                    # VPC, subnet, IGW, Security Group, EC2 e Elastic IP

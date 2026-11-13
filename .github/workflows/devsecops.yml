@@ -62,10 +62,26 @@ jobs:
           exit-code: "1"
           trivyignores: .trivyignore
 
-  # 5. build da imagem + CVE crítico com Trivy + publicação no GHCR
+  # 5. Terraform formatado e válido (não precisa de credencial da AWS)
+  terraform:
+    name: Terraform (fmt e validate)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.17.2
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform validate
+
+  # 6. build da imagem + CVE crítico com Trivy + publicação no GHCR
   imagem:
     name: Build e Trivy (imagem)
-    needs: [gitleaks, semgrep, testes, iac]
+    needs: [gitleaks, semgrep, testes, iac, terraform]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -113,7 +129,7 @@ jobs:
         env:
           IMAGEM: ${{ steps.nome.outputs.imagem }}
 
-  # 6. deploy automático na EC2 pelo SSM (sem SSH)
+  # 7. deploy automático na EC2 pelo SSM (sem SSH)
   deploy:
     name: Deploy na AWS
     needs: imagem

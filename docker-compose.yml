@@ -19,11 +19,30 @@ services:
     expose:
       - "8000"
 
+  # métricas da máquina (CPU, memória e disco da EC2) - saturação de verdade, não só do processo
+  node-exporter:
+    image: prom/node-exporter:v1.12.1
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    restart: always
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    expose:
+      - "9100"
+
   nginx:
     image: nginx:1.29-alpine
     depends_on:
       app:
         condition: service_healthy
+      node-exporter:
+        condition: service_started
     environment:
       METRICS_TOKEN: ${METRICS_TOKEN:?defina METRICS_TOKEN no .env}
     ports:
