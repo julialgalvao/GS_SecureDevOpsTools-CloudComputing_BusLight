@@ -128,7 +128,21 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
               └────────────────────────┘
 ```
 
-**Integração com o componente de Dados:** a camada Ouro (Databricks) é exportada em JSON para `app/data/` e servida pela API. A chegada ao vivo consulta a API SPTrans pelo backend, com o token guardado como segredo (nunca no navegador).
+**Integração com o componente de Dados:** a camada Ouro (Databricks) é exportada em JSON para `app/data/` pelo notebook `04_exportar_mvp` do repositório de Dados e servida pela API. A chegada ao vivo consulta a API SPTrans pelo backend, com o token guardado como segredo (nunca no navegador).
+
+**Rotas da API**
+
+| Rota | O que devolve |
+|---|---|
+| `GET /` | Site do MVP (PWA acessível) |
+| `GET /api/resumo` | Pontos monitorados e espera média geral e noturna |
+| `GET /api/pontos?faixa=noite` | Pontos com a espera média, do maior para o menor |
+| `GET /api/pontos/{codigo}/chegada` | Próximos ônibus ao vivo (SPTrans); se a SPTrans cair, devolve `503` com a espera média histórica |
+| `GET /api/saia-de-casa?ponto=&faixa=&caminhada_min=` | Antecedência recomendada e minutos evitados por linha |
+| `GET /api/linhas` | Ranking das linhas com maior espera |
+| `GET /api/alertas/{id}` | Alerta do usuário com o telefone **mascarado** |
+| `GET /health` | Saúde do app (usada pelo healthcheck e pelo teste de fumaça do deploy) |
+| `GET /metrics` | Métricas do Prometheus (protegida por token no nginx) |
 
 ---
 
@@ -136,11 +150,12 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 
 | Item | Como é feito |
 |---|---|
-| Imagem enxuta | `python:3.12-slim` com **multi-stage build**; só as dependências de produção |
-| Usuário não root | `USER buslight` (UID 10001) |
+| Imagem enxuta | `python:3.12-slim` com **multi-stage build**; só as dependências de produção; `.dockerignore` deixa de fora testes, infra e docs |
+| Usuário não root | `USER buslight` (UID 10001, sem shell) |
 | Sem segredo na imagem | Token da SPTrans entra só como variável de ambiente em tempo de execução; `.dockerignore` exclui `.env` |
-| Healthcheck | `HEALTHCHECK` chamando `/health` |
-| Stack | `docker compose up` sobe app + nginx |
+| Healthcheck | `HEALTHCHECK` chamando `/health`; o nginx só sobe depois do app saudável |
+| Endurecimento | Container do app com sistema de arquivos **somente leitura**, `cap_drop: ALL` e `no-new-privileges` |
+| Stack | `docker compose up` sobe app + nginx (proxy reverso com cabeçalhos de segurança, CSP e limite de requisições por IP) |
 
 ---
 
@@ -159,6 +174,8 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 - Porta 22 **nunca** aberta para `0.0.0.0/0` — não há SSH; a administração é pelo SSM.
 - Região, tipo de instância e tags em variáveis (`variables.tf`), com exemplo em `terraform.tfvars.example`.
 
+**Detalhes de segurança a mais:** IMDSv2 obrigatório (protege as credenciais da instância), disco **criptografado** e tags padrão em todos os recursos. O Terraform também passa pelo **Trivy** no pipeline; as duas exceções aceitas (site público na porta 80 e saída para a internet) estão justificadas no [`.trivyignore`](.trivyignore).
+
 > **Conta AWS Academy (Learner Lab):** o laboratório não permite criar IAM Roles, por isso a instância usa o perfil já existente `LabInstanceProfile`. As credenciais do lab são temporárias e a instância é desligada quando a sessão termina; o Elastic IP mantém a mesma URL e o `user_data`/`restart: always` sobe o app sozinho quando a máquina liga de novo.
 
 ---
@@ -170,13 +187,19 @@ Workflow em [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml)
 | Etapa | Ferramenta | Barra o pipeline quando |
 |---|---|---|
 | 1. Segredos | **Gitleaks** | Encontra token, chave ou senha no código ou no histórico |
-| 2. Código (SAST) | **Semgrep** | Encontra padrão de código vulnerável |
-| 3. Build | Docker Buildx | A imagem não compila |
-| 4. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
-| 5. Publicação | GHCR | — |
-| 6. Deploy automático | AWS SSM `send-command` | — (só roda se todas as etapas passarem) |
+| 2. Código (SAST) | **Semgrep** (`p/security-audit`, `p/python`, `p/dockerfile`) | Encontra padrão de código vulnerável |
+| 3. Testes | **pytest** (12 testes da API, incluindo LGPD) | Algum teste falha |
+| 4. Infra como código | **Trivy** (scan de configuração) | Terraform ou Dockerfile com configuração insegura `HIGH`/`CRITICAL` |
+| 5. Build | Docker Buildx | A imagem não compila |
+| 6. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
+| 7. Publicação | GHCR (tag com o SHA do commit + `latest`) | — |
+| 8. Deploy automático | AWS SSM `send-command` + teste de fumaça em `/health` | O app não responde depois do deploy |
 
-**Segredos do pipeline** em **GitHub Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (credenciais temporárias do AWS Academy, renovadas a cada sessão do lab), `AWS_REGION`, `EC2_INSTANCE_ID`, `SPTRANS_TOKEN`.
+As etapas 1 a 4 rodam em paralelo; build, publicação e deploy só acontecem se todas passarem, e publicação/deploy só na branch `main`.
+
+**Detalhes de segurança a mais no pipeline:** todas as GitHub Actions estão fixadas pelo **SHA do commit** (não por tag, que pode ser alterada), permissões mínimas (`contents: read`; `packages: write` só no job da imagem) e **Dependabot** semanal para dependências Python, imagem base e actions.
+
+**Segredos do pipeline** em **GitHub Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (credenciais temporárias do AWS Academy, renovadas a cada sessão do lab), `AWS_REGION`, `EC2_INSTANCE_ID`, `SPTRANS_TOKEN`, `METRICS_TOKEN`.
 
 **Execução barrada e corrigida (evidência):**
 1. Um commit com um token falso da SPTrans no código → **Gitleaks barra** o pipeline.
@@ -226,7 +249,7 @@ Prometheus e Grafana rodam localmente (`monitoring/docker-compose.yml`), coletan
 | Telefone para alerta (simulado) | Camada Ouro do Databricks (`dim_usuario`) | Hash SHA-256 + versão mascarada; o app só recebe e exibe `(11) *****-1234` |
 | Localização do usuário | Usada no navegador na hora | **Não é armazenada** nem enviada para logs |
 | Logs e métricas | EC2 e Prometheus | Sem dados pessoais; só rota, status e tempo |
-| Credenciais | GitHub Secrets e variável de ambiente na EC2 | Nunca no código nem na imagem |
+| Credenciais | GitHub Secrets e `.env` da EC2 (permissão 600), enviadas pelo SSM no deploy | Nunca no código, na imagem nem no Terraform |
 
 ---
 
@@ -237,12 +260,12 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 | Recurso | Especificação | Custo mensal estimado |
 |---|---|---|
 | EC2 | `t3.micro` (2 vCPU, 1 GB) | ~ US$ 7,60 |
-| EBS | 8 GB gp3 | ~ US$ 0,64 |
+| EBS | 20 GB gp3 (criptografado) | ~ US$ 1,60 |
 | Elastic IP / IPv4 público | 1 endereço | ~ US$ 3,65 |
 | Transferência de dados | baixo volume (até 100 GB/mês gratuitos) | ~ US$ 0,00 |
 | GitHub Actions, GHCR | repositório público | US$ 0,00 |
 | Prometheus e Grafana | locais | US$ 0,00 |
-| **Total** | | **~ US$ 12/mês** |
+| **Total** | | **~ US$ 13/mês** |
 
 > Neste projeto o custo é descontado do crédito do **AWS Academy Learner Lab**, e a instância só fica ligada durante as sessões do laboratório, o que reduz o valor real. Em uma conta própria, o nível gratuito da AWS cobriria a instância no primeiro ano.
 
@@ -258,37 +281,53 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 | **Observabilidade (3,0)** – 4 métricas de ouro e um alerta disparado | [`monitoring/`](monitoring/) + prints no PDF |
 | **Documentação (2,0)** – diagrama, responsabilidade compartilhada, LGPD, custo, README reproduzível | Este arquivo |
 
+**Além do que foi pedido**
+
+| Extra | Por que importa |
+|---|---|
+| Testes automatizados no pipeline (12 testes, incluindo um que garante que o telefone nunca sai sem máscara) | O deploy só acontece se a API funciona e respeita a LGPD |
+| Trivy também no Terraform e no Dockerfile, com exceções justificadas | A infraestrutura passa pela mesma barreira de segurança que o código |
+| Actions fixadas por SHA, permissões mínimas e Dependabot | Protege o próprio pipeline contra ataques de cadeia de suprimentos |
+| Teste de fumaça depois do deploy | O pipeline só fica verde se o MVP responde na URL pública |
+| nginx com CSP, cabeçalhos de segurança, limite de requisições e `/metrics` protegido por token | Endurecimento da aplicação exposta na internet |
+| Container somente leitura, sem capabilities, IMDSv2 e disco criptografado | Reduz o estrago se algo for comprometido |
+| Dashboard do Grafana e alertas versionados como código | Monitoramento reproduzível |
+| Site acessível (contraste, teclado, leitor de tela) e offline (PWA) | Princípios "acessível de verdade" e "resiliente ao mundo real" da GS |
+| Ambiente pronto no GitHub Codespaces | Qualquer avaliador reproduz tudo no navegador |
+
 ---
 
 ## 📁 Estrutura do repositório
 
 ```
 ├── app/
-│   ├── main.py                    # API FastAPI + páginas
-│   ├── sptrans.py                 # cliente da API Olho Vivo
-│   ├── static/                    # front-end acessível
-│   ├── data/                      # exportação JSON da camada Ouro
+│   ├── main.py                    # API FastAPI + site
+│   ├── sptrans.py                 # cliente da API Olho Vivo (chegada ao vivo, cache de 30 s)
+│   ├── metricas.py                # métricas de ouro para o Prometheus
+│   ├── static/                    # front-end acessível (PWA, funciona offline) + Leaflet
+│   ├── data/                      # exportação JSON da camada Ouro (repositório de Dados)
 │   └── requirements.txt
+├── tests/test_app.py              # 12 testes da API (rodam no pipeline)
 ├── infra/
-│   ├── main.tf
+│   ├── versions.tf                # provider AWS e tags padrão
+│   ├── main.tf                    # VPC, subnet, IGW, Security Group, EC2 e Elastic IP
 │   ├── variables.tf
-│   ├── outputs.tf
-│   ├── user_data.sh
+│   ├── outputs.tf                 # URL do MVP e ID da instância
+│   ├── user_data.sh.tftpl         # instala Docker e sobe a stack na EC2
 │   └── terraform.tfvars.example
 ├── monitoring/
-│   ├── docker-compose.yml
-│   ├── prometheus.yml
-│   ├── alert.rules.yml
-│   └── grafana/                   # dashboard das 4 métricas de ouro
-├── nginx/
-│   └── default.conf
-├── .github/workflows/devsecops.yml
+│   ├── docker-compose.yml         # Prometheus + Grafana
+│   ├── iniciar.sh                 # gera o alvo e o token e sobe o monitoramento
+│   ├── prometheus/                # prometheus.yml e alert.rules.yml
+│   └── grafana/                   # datasource e dashboard das 4 métricas de ouro (como código)
+├── nginx/default.conf.template    # proxy reverso, cabeçalhos de segurança, /metrics com token
+├── .github/
+│   ├── workflows/devsecops.yml    # pipeline DevSecOps
+│   └── dependabot.yml
+├── .devcontainer/                 # ambiente do GitHub Codespaces (Docker, Terraform, AWS CLI)
 ├── Dockerfile
 ├── docker-compose.yml
-├── .dockerignore
-├── .gitignore
-├── .env.example
-├── docs/                          # diagramas e evidências
+├── .dockerignore · .gitignore · .trivyignore · .semgrepignore · .env.example
 └── README.md
 ```
 
@@ -296,40 +335,45 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 
 ## ▶️ Como reproduzir
 
+Todo o fluxo funciona no navegador pelo **GitHub Codespaces** (**Code → Codespaces → Create codespace**): o ambiente já vem com Docker, Terraform e AWS CLI pela configuração em [`.devcontainer/`](.devcontainer/). Também funciona em qualquer máquina com Docker, Terraform 1.6+ e AWS CLI.
+
 ### Pré-requisitos
-- Docker Desktop, Terraform 1.6+ e AWS CLI
-- Acesso ao **AWS Academy Learner Lab** (ou outra conta AWS): em **AWS Details**, copie as credenciais para `~/.aws/credentials`
+- Acesso ao **AWS Academy Learner Lab** (ou outra conta AWS)
 - Token gratuito da [API Olho Vivo da SPTrans](https://www.sptrans.com.br/desenvolvedores/)
 
 ### 1. Rodar localmente
 ```bash
-git clone https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight.git
-cd GS_SecureDevOpsTools-CloudComputing_BusLight
-cp .env.example .env        # preencha SPTRANS_TOKEN
+cp .env.example .env        # preencha SPTRANS_TOKEN e METRICS_TOKEN (openssl rand -hex 24)
 docker compose up --build
+pytest                      # testes da API
 ```
-Acesse `http://localhost`.
+Acesse `http://localhost:8080` (no Codespaces, pela aba **Ports**).
 
 ### 2. Criar a infraestrutura
+No Learner Lab, clique em **Start Lab** e, em **AWS Details**, copie as credenciais para as variáveis de ambiente do terminal (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`).
 ```bash
 cd infra
-cp terraform.tfvars.example terraform.tfvars
 terraform init
 terraform plan
 terraform apply
 ```
-O `output` mostra a URL pública do MVP.
+O `output` mostra a URL pública do MVP e o ID da instância.
 
 ### 3. Publicar pelo pipeline
-1. Cadastre os segredos em **Settings → Secrets and variables → Actions** (no Learner Lab, atualize `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` e `AWS_SESSION_TOKEN` a cada nova sessão).
-2. Faça um `git push` na branch `main`: o pipeline roda as verificações e publica automaticamente.
+1. Cadastre os segredos em **Settings → Secrets and variables → Actions**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` (`us-east-1`), `EC2_INSTANCE_ID` (output do Terraform), `SPTRANS_TOKEN` e `METRICS_TOKEN`. No Learner Lab, atualize as três credenciais da AWS a cada nova sessão.
+2. Faça um `git push` na branch `main`: o pipeline roda as verificações, publica a imagem e faz o deploy.
+3. Na primeira publicação, deixe o pacote da imagem público em **Packages → gs_securedevopstools-cloudcomputing_buslight → Package settings → Change visibility**, para a EC2 conseguir baixá-la.
 
 ### 4. Monitorar
 ```bash
 cd monitoring
-docker compose up
+MVP_HOST=<ip-do-output> METRICS_TOKEN=<mesmo-token-do-secret> ./iniciar.sh
 ```
-Prometheus em `http://localhost:9090`, Grafana em `http://localhost:3000`.
+Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://localhost:3000` (usuário `admin`, senha gerada no `monitoring/.env`), dashboard **BusLight – 4 métricas de ouro**.
+
+**Para disparar os alertas:**
+- `BusLightFora`: parar o app na EC2 pelo SSM (`docker compose stop app`) e esperar 1 minuto.
+- `BusLightErrosAltos`: consultar a chegada ao vivo com a SPTrans indisponível (por exemplo, sem `SPTRANS_TOKEN`), gerando respostas `503`.
 
 ---
 
