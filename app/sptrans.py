@@ -10,7 +10,6 @@ import httpx
 
 URL = "https://api.olhovivo.sptrans.com.br/v2.1"
 CACHE_SEGUNDOS = 30
-SPTRANS_TOKEN = "5f14da91711748a3636b1c014456cc81fe831ec4ede8469253915165ce2646c0"  # token fixo só pra testar rápido
 
 
 class SPTransIndisponivel(Exception):
@@ -19,7 +18,7 @@ class SPTransIndisponivel(Exception):
 
 class ClienteSPTrans:
     def __init__(self, token=None):
-        self.token = token if token is not None else SPTRANS_TOKEN
+        self.token = token if token is not None else os.getenv("SPTRANS_TOKEN", "")
         self.cliente = httpx.Client(base_url=URL, timeout=10)
         self.autenticado = False
         self.cache = {}
