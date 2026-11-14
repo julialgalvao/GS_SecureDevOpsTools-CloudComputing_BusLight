@@ -1,5 +1,8 @@
 # Copie para terraform.tfvars se quiser mudar algum valor padrão.
 # O terraform.tfvars não vai para o Git.
-regiao           = "us-east-1"
-tipo_instancia   = "t3.micro"
-perfil_instancia = "LabInstanceProfile"
+regiao         = "us-east-1"
+tipo_instancia = "t3.micro"
+
+# Conta pessoal: deixe vazio (o Terraform cria a role do SSM).
+# AWS Academy Learner Lab: descomente a linha abaixo.
+# perfil_instancia = "LabInstanceProfile"
