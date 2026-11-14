@@ -1,0 +1,10 @@
+# Exceções justificadas do Trivy (scan de Terraform)
+
+# Security Group com entrada 0.0.0.0/0 na porta 80: o BusLight é um site público para o cidadão.
+# A única porta aberta é a 80; não existe SSH nem outra porta administrativa.
+AVD-AWS-0107
+AWS-0107
+
+# Saída liberada: a EC2 precisa baixar pacotes, a imagem do GHCR e chamar a API da SPTrans.
+AVD-AWS-0104
+AWS-0104

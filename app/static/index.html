@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="BusLight: saiba quando o ônibus chega e espere menos no ponto.">
+  <meta name="theme-color" content="#1F3A5F">
+  <title>BusLight – Luz para você ir a qualquer destino</title>
+  <link rel="manifest" href="/static/manifest.webmanifest">
+  <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="marca">
+      <img src="/static/icone.svg" alt="" width="40" height="40">
+      <div>
+        <h1>BusLight</h1>
+        <p class="slogan">Luz para você ir a qualquer destino.</p>
+      </div>
+    </div>
+    <p id="resumo" class="resumo" aria-live="polite">Carregando dados...</p>
+  </header>
+
+  <nav class="abas" role="tablist" aria-label="Seções do BusLight">
+    <button role="tab" id="aba-mapa" aria-controls="painel-mapa" aria-selected="true">Mapa</button>
+    <button role="tab" id="aba-chegada" aria-controls="painel-chegada" aria-selected="false" tabindex="-1">Chegada ao vivo</button>
+    <button role="tab" id="aba-saia" aria-controls="painel-saia" aria-selected="false" tabindex="-1">Saia de casa às...</button>
+    <button role="tab" id="aba-linhas" aria-controls="painel-linhas" aria-selected="false" tabindex="-1">Linhas</button>
+    <button role="tab" id="aba-alertas" aria-controls="painel-alertas" aria-selected="false" tabindex="-1">Meus alertas</button>
+  </nav>
+
+  <main id="conteudo">
+    <section id="painel-mapa" role="tabpanel" aria-labelledby="aba-mapa">
+      <h2>Espera média nos pontos</h2>
+      <label for="faixa-mapa">Horário</label>
+      <select id="faixa-mapa">
+        <option value="">Dia todo</option>
+        <option value="manha">Manhã (6h–12h)</option>
+        <option value="tarde">Tarde (12h–18h)</option>
+        <option value="noite">Noite (18h–24h)</option>
+      </select>
+      <div id="mapa" class="mapa" role="img" aria-label="Mapa dos pontos monitorados coloridos pela espera média"></div>
+      <p class="legenda">
+        <span class="bolinha verde" aria-hidden="true"></span> até 8 min
+        <span class="bolinha amarela" aria-hidden="true"></span> 8 a 15 min
+        <span class="bolinha vermelha" aria-hidden="true"></span> mais de 15 min
+      </p>
+      <h3>Pontos com maior espera</h3>
+      <table>
+        <caption class="leitor">Pontos com maior espera média no horário escolhido</caption>
+        <thead><tr><th scope="col">Ponto</th><th scope="col">Corredor</th><th scope="col">Espera média</th></tr></thead>
+        <tbody id="tabela-pontos"></tbody>
+      </table>
+    </section>
+
+    <section id="painel-chegada" role="tabpanel" aria-labelledby="aba-chegada" hidden>
+      <h2>Próximos ônibus no ponto</h2>
+      <form id="form-chegada">
+        <label for="ponto-chegada">Ponto</label>
+        <select id="ponto-chegada" class="lista-pontos" required></select>
+        <button type="submit">Ver próximos ônibus</button>
+      </form>
+      <div id="resultado-chegada" aria-live="polite"></div>
+    </section>
+
+    <section id="painel-saia" role="tabpanel" aria-labelledby="aba-saia" hidden>
+      <h2>Que horas eu saio de casa?</h2>
+      <form id="form-saia">
+        <label for="ponto-saia">Ponto</label>
+        <select id="ponto-saia" class="lista-pontos" required></select>
+        <label for="faixa-saia">Horário</label>
+        <select id="faixa-saia">
+          <option value="manha">Manhã</option>
+          <option value="tarde">Tarde</option>
+          <option value="noite" selected>Noite</option>
+        </select>
+        <label for="caminhada">Minutos de caminhada até o ponto</label>
+        <input id="caminhada" type="number" min="0" max="60" value="5" inputmode="numeric">
+        <button type="submit">Calcular</button>
+      </form>
+      <div id="resultado-saia" aria-live="polite"></div>
+    </section>
+
+    <section id="painel-linhas" role="tabpanel" aria-labelledby="aba-linhas" hidden>
+      <h2>Linhas com maior espera</h2>
+      <table>
+        <caption class="leitor">Ranking das linhas com maior espera média</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Linha</th><th scope="col">Trajeto</th><th scope="col">Espera média</th><th scope="col">Atraso médio</th></tr></thead>
+        <tbody id="tabela-linhas"></tbody>
+      </table>
+    </section>
+
+    <section id="painel-alertas" role="tabpanel" aria-labelledby="aba-alertas" hidden>
+      <h2>Meus alertas</h2>
+      <p>Usuários de demonstração (cadastro simulado, sem dados reais).</p>
+      <label for="usuario">Usuário</label>
+      <select id="usuario"></select>
+      <div id="resultado-alerta" aria-live="polite"></div>
+      <p class="aviso">
+        <strong>Privacidade (LGPD):</strong> o BusLight guarda apenas o telefone para o alerta, protegido com hash e exibido mascarado.
+        Sua localização é usada só na hora e não é armazenada.
+      </p>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p>Global Solution 2026.2 · FIAP · Dados: SPTrans Olho Vivo, Open-Meteo e IBGE · Mapa © colaboradores do OpenStreetMap</p>
+    <p id="status-rede" aria-live="polite"></p>
+  </footer>
+
+  <script src="/static/vendor/leaflet/leaflet.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

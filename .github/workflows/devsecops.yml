@@ -1,0 +1,192 @@
+name: DevSecOps BusLight
+
+# Roda a cada push e pull request. Só publica e faz deploy quando tudo passa na main.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: devsecops-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 1. segredos vazados (token, chave, senha) no código ou no histórico
+  gitleaks:
+    name: Gitleaks (segredos)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 2. análise estática do código (SAST)
+  semgrep:
+    name: Semgrep (código vulnerável)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.185.0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: semgrep scan --config p/security-audit --config p/python --config p/dockerfile --error --metrics=off
+
+  # 3. testes automatizados da API
+  testes:
+    name: Testes (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -q
+
+  # 4. configuração insegura no Terraform e no Dockerfile
+  iac:
+    name: Trivy (Terraform e Dockerfile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          trivyignores: .trivyignore
+
+  # 5. Terraform formatado e válido (não precisa de credencial da AWS)
+  terraform:
+    name: Terraform (fmt e validate)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.17.2
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform validate
+
+  # 6. build da imagem + CVE crítico com Trivy + publicação no GHCR
+  imagem:
+    name: Build e Trivy (imagem)
+    needs: [gitleaks, semgrep, testes, iac, terraform]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      imagem: ${{ steps.nome.outputs.imagem }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - id: nome
+        run: echo "imagem=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: ${{ steps.nome.outputs.imagem }}:${{ github.sha }}
+
+      - name: Trivy na imagem
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ steps.nome.outputs.imagem }}:${{ github.sha }}
+          format: table
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Login no GHCR
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publicar imagem
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          docker tag "$IMAGEM:$GITHUB_SHA" "$IMAGEM:latest"
+          docker push "$IMAGEM:$GITHUB_SHA"
+          docker push "$IMAGEM:latest"
+        env:
+          IMAGEM: ${{ steps.nome.outputs.imagem }}
+
+  # 7. deploy automático na EC2 pelo SSM (sem SSH)
+  deploy:
+    name: Deploy na AWS
+    needs: imagem
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-producao
+    env:
+      TEM_AWS: ${{ secrets.EC2_INSTANCE_ID != '' }}
+    steps:
+      - name: Infra ainda não criada
+        if: env.TEM_AWS != 'true'
+        run: echo "::notice::Secrets da AWS não configurados, deploy pulado."
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        if: env.TEM_AWS == 'true'
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Atualizar o app na EC2
+        if: env.TEM_AWS == 'true'
+        env:
+          INSTANCIA: ${{ secrets.EC2_INSTANCE_ID }}
+          IMAGEM: ${{ needs.imagem.outputs.imagem }}:${{ github.sha }}
+          SPTRANS_TOKEN: ${{ secrets.SPTRANS_TOKEN }}
+          METRICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
+        run: |
+          jq -n --arg img "$IMAGEM" --arg sp "$SPTRANS_TOKEN" --arg mt "$METRICS_TOKEN" '{commands: [
+            "set -e",
+            "cd /opt/buslight",
+            "git pull --ff-only",
+            ("printf \"IMAGE=%s\\nHTTP_PORT=80\\nSPTRANS_TOKEN=%s\\nMETRICS_TOKEN=%s\\n\" \"" + $img + "\" \"" + $sp + "\" \"" + $mt + "\" > .env"),
+            "chmod 600 .env",
+            "docker compose pull app",
+            "docker compose up -d --no-build",
+            "docker image prune -f"
+          ]}' > comandos.json
+
+          ID=$(aws ssm send-command --instance-ids "$INSTANCIA" --document-name AWS-RunShellScript \
+                 --comment "deploy ${GITHUB_SHA::7}" --parameters file://comandos.json \
+                 --query Command.CommandId --output text)
+          rm comandos.json
+          aws ssm wait command-executed --command-id "$ID" --instance-id "$INSTANCIA" || true
+          aws ssm get-command-invocation --command-id "$ID" --instance-id "$INSTANCIA" \
+            --query '{status: Status, saida: StandardOutputContent, erro: StandardErrorContent}'
+          STATUS=$(aws ssm get-command-invocation --command-id "$ID" --instance-id "$INSTANCIA" --query Status --output text)
+          test "$STATUS" = "Success"
+
+      - name: Teste de fumaça
+        if: env.TEM_AWS == 'true'
+        env:
+          INSTANCIA: ${{ secrets.EC2_INSTANCE_ID }}
+        run: |
+          IP=$(aws ec2 describe-instances --instance-ids "$INSTANCIA" \
+                 --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+          curl -fsS --retry 10 --retry-delay 6 --retry-all-errors "http://$IP/health"
+          echo "::notice::BusLight no ar em http://$IP"

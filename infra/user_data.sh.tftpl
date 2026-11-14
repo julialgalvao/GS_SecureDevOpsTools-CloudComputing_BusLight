@@ -1,0 +1,30 @@
+#!/bin/bash
+# BusLight - preparação da EC2 (roda uma vez, na primeira vez que a máquina liga)
+set -euxo pipefail
+
+# o Elastic IP é associado logo depois da criação; espera a internet chegar
+until curl -s --max-time 5 https://github.com > /dev/null; do sleep 5; done
+
+dnf install -y docker git
+systemctl enable --now docker
+usermod -aG docker ec2-user
+
+mkdir -p /usr/local/lib/docker/cli-plugins
+curl -fsSL https://github.com/docker/compose/releases/download/v5.7.1/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+git clone ${repositorio} /opt/buslight
+cd /opt/buslight
+
+# segredos chegam depois pelo deploy (SSM); aqui só um token de métricas provisório
+cat > .env <<EOF
+IMAGE=${imagem}
+HTTP_PORT=80
+SPTRANS_TOKEN=
+METRICS_TOKEN=$(openssl rand -hex 24)
+EOF
+chmod 600 .env
+
+docker compose pull || true
+docker compose up -d

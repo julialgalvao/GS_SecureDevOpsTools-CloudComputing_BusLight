@@ -1,0 +1,4 @@
+# biblioteca de terceiros (Leaflet, minificada) não é código nosso
+app/static/vendor/
+tests/
+.venv/

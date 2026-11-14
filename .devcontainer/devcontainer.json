@@ -1,0 +1,16 @@
+{
+  "name": "BusLight (Cloud)",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {}
+  },
+  "forwardPorts": [8080, 9090, 3000],
+  "portsAttributes": {
+    "8080": { "label": "BusLight (local)" },
+    "9090": { "label": "Prometheus" },
+    "3000": { "label": "Grafana" }
+  },
+  "postCreateCommand": "pip install -r requirements-dev.txt"
+}

@@ -1,0 +1,44 @@
+groups:
+  - name: buslight
+    rules:
+      - alert: BusLightFora
+        expr: up{job="buslight"} == 0
+        for: 1m
+        labels:
+          severidade: critica
+        annotations:
+          resumo: "O BusLight está fora do ar"
+          descricao: "O Prometheus não consegue coletar métricas de {{ $labels.instance }} há mais de 1 minuto."
+
+      - alert: BusLightErrosAltos
+        expr: |
+          sum(rate(http_requests_total{job="buslight", status=~"5.."}[2m]))
+            / sum(rate(http_requests_total{job="buslight"}[2m])) > 0.05
+        for: 2m
+        labels:
+          severidade: alta
+        annotations:
+          resumo: "Mais de 5% das requisições com erro"
+          descricao: "Taxa de respostas 5xx acima de 5% (ex.: API da SPTrans indisponível)."
+
+      - alert: BusLightLento
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job="buslight"}[5m]))) > 1
+        for: 5m
+        labels:
+          severidade: media
+        annotations:
+          resumo: "BusLight lento"
+          descricao: "95% das requisições estão levando mais de 1 segundo."
+
+      - alert: EC2Saturada
+        expr: |
+          (1 - avg(rate(node_cpu_seconds_total{job="ec2", mode="idle"}[5m]))) > 0.9
+            or (1 - node_memory_MemAvailable_bytes{job="ec2"} / node_memory_MemTotal_bytes{job="ec2"}) > 0.9
+            or (1 - node_filesystem_avail_bytes{job="ec2", mountpoint="/"} / node_filesystem_size_bytes{job="ec2", mountpoint="/"}) > 0.85
+        for: 5m
+        labels:
+          severidade: alta
+        annotations:
+          resumo: "EC2 perto do limite"
+          descricao: "CPU ou memória acima de 90%, ou disco acima de 85%."
