@@ -165,7 +165,8 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 |---|---|
 | `aws_vpc`, `aws_subnet`, `aws_internet_gateway`, `aws_route_table` | Rede própria do BusLight |
 | `aws_security_group` | Entrada **apenas na porta 80**; nenhuma porta administrativa aberta |
-| `aws_instance` | EC2 que roda a stack com Docker (instalado via `user_data`), com o perfil `LabInstanceProfile` para acesso via **SSM Session Manager**, sem SSH |
+| `aws_instance` | EC2 que roda a stack com Docker (instalado via `user_data`); o acesso administrativo é pelo **SSM Session Manager**, sem SSH |
+| `aws_iam_role` + `aws_iam_instance_profile` | Role mínima (`AmazonSSMManagedInstanceCore`) para o SSM; criada só em conta pessoal |
 | `aws_eip` | Elastic IP: o endereço do MVP não muda quando a instância é parada e ligada de novo |
 | `output` | IP/URL pública do MVP e ID da instância |
 
@@ -176,7 +177,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 
 **Detalhes de segurança a mais:** IMDSv2 obrigatório (protege as credenciais da instância), disco **criptografado** e tags padrão em todos os recursos. O Terraform também passa pelo **Trivy** no pipeline; as duas exceções aceitas (site público na porta 80 e saída para a internet) estão justificadas no [`.trivyignore`](.trivyignore).
 
-> **Conta AWS Academy (Learner Lab):** o laboratório não permite criar IAM Roles, por isso a instância usa o perfil já existente `LabInstanceProfile`. As credenciais do lab são temporárias e a instância é desligada quando a sessão termina; o Elastic IP mantém a mesma URL e o `user_data`/`restart: always` sobe o app sozinho quando a máquina liga de novo.
+> **Conta pessoal ou AWS Academy:** por padrão o Terraform cria a role do SSM. No **AWS Academy Learner Lab**, que não permite criar IAM Roles, defina `perfil_instancia = "LabInstanceProfile"` no `terraform.tfvars`. No lab, as credenciais são temporárias e a instância é desligada quando a sessão termina; o Elastic IP mantém a mesma URL e o `user_data`/`restart: always` sobe o app sozinho quando a máquina liga de novo.
 
 ---
 
@@ -349,7 +350,7 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 Todo o fluxo funciona no navegador pelo **GitHub Codespaces** (**Code → Codespaces → Create codespace**): o ambiente já vem com Docker, Terraform e AWS CLI pela configuração em [`.devcontainer/`](.devcontainer/). Também funciona em qualquer máquina com Docker, Terraform 1.6+ e AWS CLI.
 
 ### Pré-requisitos
-- Acesso ao **AWS Academy Learner Lab** (ou outra conta AWS)
+- Uma conta **AWS** (pessoal, ou o **AWS Academy Learner Lab**)
 - Token gratuito da [API Olho Vivo da SPTrans](https://www.sptrans.com.br/desenvolvedores/)
 
 ### 1. Rodar localmente
