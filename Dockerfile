@@ -1,13 +1,13 @@
 # BusLight - imagem do app (FastAPI)
 # Multi-stage: as dependências são instaladas numa etapa e só o resultado vai para a imagem final.
 
-FROM python:3.12-slim AS dependencias
+FROM python:3.15-slim AS dependencias
 WORKDIR /build
 COPY app/requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 
-FROM python:3.12-slim
+FROM python:3.15-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
