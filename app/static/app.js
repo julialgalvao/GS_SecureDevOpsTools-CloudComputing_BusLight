@@ -61,6 +61,14 @@ function configurarAbas() {
   });
 }
 
+// célula com selo colorido pela espera (verde, laranja, vermelho)
+function selo(minutos) {
+  const td = el("td");
+  const cor = minutos <= 8 ? "ok" : minutos <= 15 ? "medio" : "alto";
+  td.append(el("span", `${minutos} min`, `selo-espera ${cor}`));
+  return td;
+}
+
 // ---------------------------------------------------------------- resumo
 async function carregarResumo() {
   const { ok, dados } = await api("/api/resumo");
@@ -71,6 +79,10 @@ async function carregarResumo() {
   }
   const noite = dados.espera_media_noite_min ? ` · à noite: ${dados.espera_media_noite_min} min` : "";
   alvo.textContent = `${dados.pontos} pontos monitorados · espera média de ${dados.espera_media_min} min${noite}`;
+  document.getElementById("n-pontos").textContent = dados.pontos;
+  document.getElementById("n-espera").textContent = dados.espera_media_min;
+  document.getElementById("n-noite").textContent = dados.espera_media_noite_min ?? "–";
+  document.getElementById("n-coletas").textContent = dados.coletas ?? "–";
 }
 
 // ---------------------------------------------------------------- mapa
@@ -106,7 +118,7 @@ async function carregarMapa(faixa) {
   limpar(tabela);
   dados.slice(0, 10).forEach((p) => {
     const tr = el("tr");
-    tr.append(el("td", p.nome), el("td", p.regiao.replace("Corredor ", "")), el("td", `${p.espera_media_min} min`));
+    tr.append(el("td", p.nome), el("td", p.regiao.replace("Corredor ", "")), selo(p.espera_media_min));
     tabela.append(tr);
   });
 }
@@ -221,7 +233,7 @@ async function carregarLinhas() {
       el("td", l.posicao),
       el("td", l.letreiro),
       el("td", `${l.terminal_principal} / ${l.terminal_secundario}`),
-      el("td", `${l.espera_media_min} min`),
+      selo(l.espera_media_min),
       el("td", `${l.atraso_medio_min} min`),
     );
     tabela.append(tr);
