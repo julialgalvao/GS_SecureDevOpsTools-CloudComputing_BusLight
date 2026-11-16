@@ -18,6 +18,7 @@ def test_health():
     resp = cliente.get("/health")
     assert resp.status_code == 200
     assert resp.json()["status"] == "ok"
+    assert "versao" in resp.json()
 
 
 def test_site_abre():

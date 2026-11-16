@@ -9,7 +9,11 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 FROM python:3.15-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
+# commit que gerou a imagem; o /health devolve esse valor e o pipeline confere no deploy
+ARG GIT_SHA=dev
+
+ENV GIT_SHA=${GIT_SHA} \
+    PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # usuário sem privilégios para rodar o app

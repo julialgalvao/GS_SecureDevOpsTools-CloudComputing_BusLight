@@ -39,3 +39,10 @@ variable "imagem" {
   type        = string
   default     = "ghcr.io/julialgalvao/gs_securedevopstools-cloudcomputing_buslight:latest"
 }
+
+variable "metrics_token" {
+  description = "Token que o Prometheus usa em /metrics. Vem do terraform.tfvars (fora do Git). Vazio: a EC2 gera um aleatório."
+  type        = string
+  default     = ""
+  sensitive   = true
+}

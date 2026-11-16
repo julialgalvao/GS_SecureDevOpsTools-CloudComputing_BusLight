@@ -77,7 +77,7 @@ def buscar_ponto(codigo):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "pontos": len(pontos)}
+    return {"status": "ok", "pontos": len(pontos), "versao": os.getenv("GIT_SHA", "dev")}
 
 
 @app.get("/metrics")

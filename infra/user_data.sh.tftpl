@@ -17,14 +17,52 @@ chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 git clone ${repositorio} /opt/buslight
 cd /opt/buslight
 
-# segredos chegam depois pelo deploy (SSM); aqui só um token de métricas provisório
+# o .env fica só na máquina (permissão 600). O token de métricas vem do Terraform (tfvars fora do Git)
+METRICS_TOKEN="${metrics}"
+[ -n "$METRICS_TOKEN" ] || METRICS_TOKEN=$(openssl rand -hex 24)
 cat > .env <<EOF
 IMAGE=${imagem}
 HTTP_PORT=80
 SPTRANS_TOKEN=
-METRICS_TOKEN=$(openssl rand -hex 24)
+METRICS_TOKEN=$METRICS_TOKEN
 EOF
 chmod 600 .env
 
 docker compose pull || true
 docker compose up -d
+
+# deploy automático (pull): a cada minuto confere se há imagem nova no GHCR e atualiza o app.
+# Não precisa de SSH, SSM nem de credencial da AWS no pipeline.
+cat > /usr/local/bin/buslight-atualiza.sh <<'EOS'
+#!/bin/bash
+set -e
+cd /opt/buslight
+git pull --ff-only -q || true
+docker compose pull -q app nginx
+docker compose up -d --no-build
+docker image prune -f > /dev/null
+EOS
+chmod +x /usr/local/bin/buslight-atualiza.sh
+
+cat > /etc/systemd/system/buslight-atualiza.service <<'EOS'
+[Unit]
+Description=BusLight - atualiza o app para a imagem mais recente
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/buslight-atualiza.sh
+EOS
+
+cat > /etc/systemd/system/buslight-atualiza.timer <<'EOS'
+[Unit]
+Description=BusLight - confere imagem nova a cada minuto
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+
+[Install]
+WantedBy=timers.target
+EOS
+systemctl daemon-reload
+systemctl enable --now buslight-atualiza.timer

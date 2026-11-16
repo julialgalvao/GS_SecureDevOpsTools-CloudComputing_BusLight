@@ -123,6 +123,7 @@ resource "aws_instance" "app" {
   user_data = templatefile("${path.module}/user_data.sh.tftpl", {
     repositorio = var.repositorio
     imagem      = var.imagem
+    metrics     = var.metrics_token
   })
   user_data_replace_on_change = true
 

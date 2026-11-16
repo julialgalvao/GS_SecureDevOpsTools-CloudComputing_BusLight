@@ -82,7 +82,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Quem é o cidadão beneficiado?** | O trabalhador da periferia de São Paulo que depende do ônibus, principalmente em horário noturno |
 | **Qual problema será resolvido?** | A espera longa, imprevisível e insegura no ponto de ônibus |
 | **Como a solução funcionará?** | Um app web acessível mostra a chegada real dos ônibus, os pontos com maior espera e a hora certa de sair de casa, com dados reais da SPTrans tratados no lakehouse |
-| **Quais tecnologias serão empregadas?** | Neste componente: Python (FastAPI), Docker, Terraform, AWS (EC2, VPC, Elastic IP, SSM), GitHub Actions, Gitleaks, Semgrep, Trivy, Prometheus e Grafana |
+| **Quais tecnologias serão empregadas?** | Neste componente: Python (FastAPI), Docker, Terraform, AWS (EC2, VPC, Elastic IP), GitHub Actions, Gitleaks, Semgrep, Trivy, Prometheus e Grafana |
 | **Quem participará do ecossistema?** | Passageiros (usam de graça), Prefeitura e SPTrans (painel de gestão), empresas de mídia em ponto de ônibus e empresas com funcionários de turno noturno |
 | **Como o impacto poderá ser medido e ampliado?** | Medido pelos minutos de espera evitados e pelo uso do app em horário noturno; ampliado replicando a infraestrutura por código (Terraform) para outras cidades |
 
@@ -106,7 +106,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
       ▼
 ┌───────────────────────────── GitHub Actions ─────────────────────────────┐
 │  gitleaks ─▶ semgrep ─▶ build da imagem ─▶ trivy ─▶ push (GHCR) ─▶ deploy  │
-│  (segredo)   (código)                     (CVE)                   (SSM)   │
+│  (segredo)   (código)                     (CVE)                   (pull)  │
 └──────────────────────────────────────────────────────────────────┬────────┘
                                                                    │
               ┌────────────────────── AWS (criada por Terraform) ──▼────────┐
@@ -117,7 +117,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
               │  │   └─ app BusLight (FastAPI, usuário não root)   │──▶ API SPTrans
               │  │        /, /api/*, /health, /metrics              │         │
               │  └─────────────────────────────────────────────────┘         │
-              │  Security Group: entrada só 80 · sem SSH (acesso via SSM)    │
+              │  Security Group: entrada só 80 · sem SSH, sem porta admin  │
               │  Elastic IP: endereço fixo do MVP                            │
               │  Instance profile: LabInstanceProfile (AWS Academy)          │
               └──────────────────────────────────────────────────────────────┘
@@ -165,19 +165,19 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 |---|---|
 | `aws_vpc`, `aws_subnet`, `aws_internet_gateway`, `aws_route_table` | Rede própria do BusLight |
 | `aws_security_group` | Entrada **apenas na porta 80**; nenhuma porta administrativa aberta |
-| `aws_instance` | EC2 que roda a stack com Docker (instalado via `user_data`); o acesso administrativo é pelo **SSM Session Manager**, sem SSH |
-| `aws_iam_role` + `aws_iam_instance_profile` | Role mínima (`AmazonSSMManagedInstanceCore`) para o SSM; criada só em conta pessoal |
+| `aws_instance` | EC2 que roda a stack com Docker (instalado via `user_data`); não há SSH nem porta administrativa; o app é atualizado por *pull* (timer `buslight-atualiza`) |
+| `aws_iam_role` + `aws_iam_instance_profile` | Opcionais. Em conta pessoal o Terraform cria uma role mínima de SSM; em labs que bloqueiam `iam:PassRole`, `sem_perfil = true` sobe a EC2 sem perfil |
 | `aws_eip` | Elastic IP: o endereço do MVP não muda quando a instância é parada e ligada de novo |
 | `output` | IP/URL pública do MVP e ID da instância |
 
 **Boas práticas exigidas:**
 - `terraform.tfstate` e `*.tfvars` **fora do repositório** (no `.gitignore`).
-- Porta 22 **nunca** aberta para `0.0.0.0/0` — não há SSH; a administração é pelo SSM.
+- Porta 22 **nunca** aberta para `0.0.0.0/0` — não há SSH nem outra porta administrativa. A máquina busca a versão nova sozinha, e nada entra por fora.
 - Região, tipo de instância e tags em variáveis (`variables.tf`), com exemplo em `terraform.tfvars.example`.
 
 **Detalhes de segurança a mais:** IMDSv2 obrigatório (protege as credenciais da instância), disco **criptografado** e tags padrão em todos os recursos. O Terraform também passa pelo **Trivy** no pipeline; as duas exceções aceitas (site público na porta 80 e saída para a internet) estão justificadas no [`.trivyignore`](.trivyignore).
 
-> **Conta pessoal ou AWS Academy:** por padrão o Terraform cria a role do SSM. No **AWS Academy Learner Lab**, que não permite criar IAM Roles, defina `perfil_instancia = "LabInstanceProfile"` no `terraform.tfvars`. No lab, as credenciais são temporárias e a instância é desligada quando a sessão termina; o Elastic IP mantém a mesma URL e o `user_data`/`restart: always` sobe o app sozinho quando a máquina liga de novo.
+> **Conta pessoal ou AWS Academy:** por padrão o Terraform cria a role do SSM. No **AWS Academy**, que não permite criar IAM Roles e pode bloquear `iam:PassRole`, defina `sem_perfil = true` no `terraform.tfvars`. No lab, as credenciais são temporárias e a instância é desligada quando a sessão termina; o Elastic IP mantém a mesma URL e o `user_data`/`restart: always` sobe o app sozinho quando a máquina liga de novo.
 
 ---
 
@@ -195,13 +195,13 @@ Workflow em [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml)
 | 6. Build | Docker Buildx | A imagem não compila |
 | 7. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
 | 8. Publicação | GHCR (tag com o SHA do commit + `latest`) | — |
-| 9. Deploy automático | AWS SSM `send-command` + teste de fumaça em `/health` | O app não responde depois do deploy |
+| 9. Deploy automático | Deploy por *pull*: a EC2 baixa a imagem nova do GHCR; o job espera o `/health` público devolver o commit do pipeline e roda um teste de fumaça | A EC2 não atualiza em 10 minutos ou o site não responde |
 
 As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se todas passarem, e publicação/deploy só na branch `main`.
 
 **Detalhes de segurança a mais no pipeline:** todas as GitHub Actions estão fixadas pelo **SHA do commit** (não por tag, que pode ser alterada), permissões mínimas (`contents: read`; `packages: write` só no job da imagem) e **Dependabot** semanal para dependências Python, imagem base e actions.
 
-**Segredos do pipeline** em **GitHub Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (credenciais temporárias do AWS Academy, renovadas a cada sessão do lab), `AWS_REGION`, `EC2_INSTANCE_ID`, `SPTRANS_TOKEN`, `METRICS_TOKEN`.
+**Configuração do pipeline**: o deploy só precisa da variável `MVP_URL` (Settings → Variables). O pipeline não guarda nenhuma credencial da AWS. O `GITHUB_TOKEN` publica a imagem no GHCR. `SPTRANS_TOKEN` e `METRICS_TOKEN` ficam só na EC2 (`.env`, permissão 600) e no `terraform.tfvars` local, fora do Git.
 
 **Execução barrada e corrigida (evidência):**
 1. Na branch `prova/token-vazado`, um commit coloca um token falso da SPTrans direto no código → **Gitleaks barra** o pipeline e nada é publicado.
@@ -258,7 +258,7 @@ As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca f
 | Telefone para alerta (simulado) | Camada Ouro do Databricks (`dim_usuario`) | Hash SHA-256 + versão mascarada; o app só recebe e exibe `(11) *****-1234` |
 | Localização do usuário | Usada no navegador na hora | **Não é armazenada** nem enviada para logs |
 | Logs e métricas | EC2 e Prometheus | Sem dados pessoais; só rota, status e tempo |
-| Credenciais | GitHub Secrets e `.env` da EC2 (permissão 600), enviadas pelo SSM no deploy | Nunca no código, na imagem nem no Terraform |
+| Credenciais | GitHub Secrets e `.env` da EC2 (permissão 600), fora do Git (`terraform.tfvars` e `.env` da EC2) | Nunca no código, na imagem nem no Terraform |
 
 ---
 
@@ -300,7 +300,7 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 | Teste de fumaça depois do deploy | O pipeline só fica verde se o MVP responde na URL pública |
 | `terraform fmt` e `terraform validate` no pipeline | A infra é checada a cada push, igual ao código |
 | node-exporter na EC2 (pelo nginx, com token) | Saturação da máquina inteira, não só do processo do app |
-| Sem SSH: em vez de restringir a porta 22 a um IP, ela nem existe; administração pelo SSM | Menos superfície de ataque |
+| Sem SSH: em vez de restringir a porta 22 a um IP, ela nem existe; o deploy é por *pull*, sem acesso de entrada | Menos superfície de ataque |
 | nginx com CSP, cabeçalhos de segurança, limite de requisições e `/metrics` protegido por token | Endurecimento da aplicação exposta na internet |
 | Container somente leitura, sem capabilities, IMDSv2 e disco criptografado | Reduz o estrago se algo for comprometido |
 | Dashboard do Grafana e alertas versionados como código | Monitoramento reproduzível |
@@ -372,7 +372,7 @@ terraform apply
 O `output` mostra a URL pública do MVP e o ID da instância.
 
 ### 3. Publicar pelo pipeline
-1. Cadastre os segredos em **Settings → Secrets and variables → Actions**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION` (`us-east-1`), `EC2_INSTANCE_ID` (output do Terraform), `SPTRANS_TOKEN` e `METRICS_TOKEN`. No Learner Lab, atualize as três credenciais da AWS a cada nova sessão.
+1. Cadastre a variável `MVP_URL` (a `url_mvp` do Terraform) em **Settings → Secrets and variables → Actions → Variables**. Não há credencial da AWS no GitHub.
 2. Faça um `git push` na branch `main`: o pipeline roda as verificações, publica a imagem e faz o deploy.
 3. Na primeira publicação, deixe o pacote da imagem público em **Packages → gs_securedevopstools-cloudcomputing_buslight → Package settings → Change visibility**, para a EC2 conseguir baixá-la.
 
@@ -384,7 +384,7 @@ MVP_HOST=<ip-do-output> METRICS_TOKEN=<mesmo-token-do-secret> ./iniciar.sh
 Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://localhost:3000` (usuário `admin`, senha gerada no `monitoring/.env`), dashboard **BusLight – 4 métricas de ouro**.
 
 **Para disparar os alertas:**
-- `BusLightFora`: parar o app na EC2 pelo SSM (`docker compose stop app`) e esperar 1 minuto.
+- `BusLightFora`: parar a EC2 (`aws ec2 stop-instances --instance-ids <id>`), esperar 1 minuto e ligar de novo (`start-instances`). O Elastic IP mantém a URL.
 - `BusLightErrosAltos`: consultar a chegada ao vivo com a SPTrans indisponível (por exemplo, sem `SPTRANS_TOKEN`), gerando respostas `503`.
 
 ---
