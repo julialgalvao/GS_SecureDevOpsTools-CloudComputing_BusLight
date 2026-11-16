@@ -130,18 +130,46 @@ jobs:
         env:
           IMAGEM: ${{ steps.nome.outputs.imagem }}
 
+  # 6b. a stack inteira (app + nginx + node-exporter) sobe com docker compose e responde
+  compose:
+    name: Stack no docker compose
+    runs-on: ubuntu-latest
+    needs: testes
+    env:
+      HTTP_PORT: "8080"
+      # o segredo vem do GitHub Secrets; sem ele (PR de fork) usa um valor só de teste
+      METRICS_TOKEN: ${{ secrets.METRICS_TOKEN || 'token-de-teste' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Subir a stack
+        run: docker compose up -d --build --wait --wait-timeout 180
+
+      - name: Site e métricas respondem
+        run: |
+          curl -fsS http://127.0.0.1:8080/health
+          curl -fsS http://127.0.0.1:8080/ | grep -q BusLight
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/metrics)" = "401"
+          curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:8080/metrics | grep -q http_
+          curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:8080/node-metrics | grep -q node_cpu
+
+      - name: Derrubar
+        if: always()
+        run: docker compose down -v
+
   # 7. deploy automático. A EC2 não tem porta de administração (nem SSH), então o deploy é "pull":
   # o pipeline publica a imagem e a própria máquina (timer buslight-atualiza) baixa a versão nova.
   # O job só termina verde quando o /health da URL pública devolve o commit deste pipeline.
   deploy:
     name: Deploy na AWS
-    needs: imagem
+    needs: [imagem, compose]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-producao
     env:
       MVP_URL: ${{ vars.MVP_URL }}
+      METRICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
     steps:
       - name: URL do MVP não configurada
         if: env.MVP_URL == ''
@@ -167,3 +195,8 @@ jobs:
         run: |
           curl -fsS "$MVP_URL/api/resumo" > /dev/null
           curl -fsS "$MVP_URL/" | grep -q BusLight
+          # as métricas só abrem com o token (GitHub Secret); sem ele a resposta é 401
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$MVP_URL/metrics")" = "401"
+          if [ -n "$METRICS_TOKEN" ]; then
+            curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" "$MVP_URL/metrics" | grep -q http_
+          fi

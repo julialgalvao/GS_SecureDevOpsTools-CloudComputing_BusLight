@@ -195,13 +195,14 @@ Workflow em [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml)
 | 6. Build | Docker Buildx | A imagem não compila |
 | 7. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
 | 8. Publicação | GHCR (tag com o SHA do commit + `latest`) | — |
+| 8b. Stack no `docker compose` | Sobe app, nginx e node-exporter, confere `/health`, o site e as métricas (401 sem token, 200 com o `METRICS_TOKEN` do GitHub Secrets) | A stack não sobe ou as métricas ficam abertas |
 | 9. Deploy automático | Deploy por *pull*: a EC2 baixa a imagem nova do GHCR; o job espera o `/health` público devolver o commit do pipeline e roda um teste de fumaça | A EC2 não atualiza em 10 minutos ou o site não responde |
 
 As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se todas passarem, e publicação/deploy só na branch `main`.
 
 **Detalhes de segurança a mais no pipeline:** todas as GitHub Actions estão fixadas pelo **SHA do commit** (não por tag, que pode ser alterada), permissões mínimas (`contents: read`; `packages: write` só no job da imagem) e **Dependabot** semanal para dependências Python, imagem base e actions.
 
-**Configuração do pipeline**: o deploy só precisa da variável `MVP_URL` (Settings → Variables). O pipeline não guarda nenhuma credencial da AWS. O `GITHUB_TOKEN` publica a imagem no GHCR. `SPTRANS_TOKEN` e `METRICS_TOKEN` ficam só na EC2 (`.env`, permissão 600) e no `terraform.tfvars` local, fora do Git.
+**Segredos e configuração do pipeline**: o `METRICS_TOKEN` fica em **GitHub Secrets** (usado no job do compose e no teste de fumaça do deploy), e o `GITHUB_TOKEN` publica a imagem no GHCR. A variável `MVP_URL` (Settings → Variables) aponta o deploy para a URL pública. Não há credencial da AWS no GitHub. O token da SPTrans fica só na EC2 (`.env`, permissão 600) e o `terraform.tfvars` fica fora do Git.
 
 **Execução barrada e corrigida (evidência):**
 1. Na branch `prova/token-vazado`, um commit coloca um token falso da SPTrans direto no código → **Gitleaks barra** o pipeline e nada é publicado.
@@ -372,7 +373,7 @@ terraform apply
 O `output` mostra a URL pública do MVP e o ID da instância.
 
 ### 3. Publicar pelo pipeline
-1. Cadastre a variável `MVP_URL` (a `url_mvp` do Terraform) em **Settings → Secrets and variables → Actions → Variables**. Não há credencial da AWS no GitHub.
+1. Em **Settings → Secrets and variables → Actions**, cadastre o Secret `METRICS_TOKEN` (o mesmo do `terraform.tfvars`) e a Variable `MVP_URL` (a `url_mvp` do Terraform). Não há credencial da AWS no GitHub.
 2. Faça um `git push` na branch `main`: o pipeline roda as verificações, publica a imagem e faz o deploy.
 3. Na primeira publicação, deixe o pacote da imagem público em **Packages → gs_securedevopstools-cloudcomputing_buslight → Package settings → Change visibility**, para a EC2 conseguir baixá-la.
 
