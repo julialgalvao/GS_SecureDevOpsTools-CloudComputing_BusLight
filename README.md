@@ -119,7 +119,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
               │  └─────────────────────────────────────────────────┘         │
               │  Security Group: entrada só 80 · sem SSH, sem porta admin  │
               │  Elastic IP: endereço fixo do MVP                            │
-              │  Instance profile: LabInstanceProfile (AWS Academy)          │
+              │  Sem instance profile (labs sem iam:PassRole) · deploy: pull │
               └──────────────────────────────────────────────────────────────┘
                           ▲ scrape /metrics
               ┌───────────┴────────────┐
