@@ -8,3 +8,7 @@ AWS-0107
 # Saída liberada: a EC2 precisa baixar pacotes, a imagem do GHCR e chamar a API da SPTrans.
 AVD-AWS-0104
 AWS-0104
+
+# Azure: NSG com entrada pública na porta 80 (site do cidadão). Não existe SSH nem outra porta.
+AVD-AZU-0047
+AZU-0047

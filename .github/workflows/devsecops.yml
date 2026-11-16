@@ -62,13 +62,16 @@ jobs:
           exit-code: "1"
           trivyignores: .trivyignore
 
-  # 5. Terraform formatado e válido (não precisa de credencial da AWS)
+  # 5. Terraform formatado e válido, nas duas nuvens (não precisa de credencial)
   terraform:
     name: Terraform (fmt e validate)
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        diretorio: [infra, infra-azure]
     defaults:
       run:
-        working-directory: infra
+        working-directory: ${{ matrix.diretorio }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1

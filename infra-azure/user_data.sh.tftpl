@@ -1,0 +1,68 @@
+#!/bin/bash
+# BusLight - preparação da VM (roda uma vez, na primeira vez que a máquina liga)
+set -euxo pipefail
+
+# o Elastic IP é associado logo depois da criação; espera a internet chegar
+until curl -s --max-time 5 https://github.com > /dev/null; do sleep 5; done
+
+apt-get update
+apt-get install -y docker.io git curl openssl
+systemctl enable --now docker
+
+mkdir -p /usr/local/lib/docker/cli-plugins
+curl -fsSL https://github.com/docker/compose/releases/download/v5.7.1/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+git clone ${repositorio} /opt/buslight
+cd /opt/buslight
+
+# o .env fica só na máquina (permissão 600). O token de métricas vem do Terraform (tfvars fora do Git)
+METRICS_TOKEN="${metrics}"
+[ -n "$METRICS_TOKEN" ] || METRICS_TOKEN=$(openssl rand -hex 24)
+cat > .env <<EOF
+IMAGE=${imagem}
+HTTP_PORT=80
+SPTRANS_TOKEN=
+METRICS_TOKEN=$METRICS_TOKEN
+EOF
+chmod 600 .env
+
+docker compose pull || true
+docker compose up -d
+
+# deploy automático (pull): a cada minuto confere se há imagem nova no GHCR e atualiza o app.
+# Não precisa de SSH, SSM nem de credencial da AWS no pipeline.
+cat > /usr/local/bin/buslight-atualiza.sh <<'EOS'
+#!/bin/bash
+set -e
+cd /opt/buslight
+git pull --ff-only -q || true
+docker compose pull -q app nginx
+docker compose up -d --no-build
+docker image prune -f > /dev/null
+EOS
+chmod +x /usr/local/bin/buslight-atualiza.sh
+
+cat > /etc/systemd/system/buslight-atualiza.service <<'EOS'
+[Unit]
+Description=BusLight - atualiza o app para a imagem mais recente
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/buslight-atualiza.sh
+EOS
+
+cat > /etc/systemd/system/buslight-atualiza.timer <<'EOS'
+[Unit]
+Description=BusLight - confere imagem nova a cada minuto
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+
+[Install]
+WantedBy=timers.target
+EOS
+systemctl daemon-reload
+systemctl enable --now buslight-atualiza.timer

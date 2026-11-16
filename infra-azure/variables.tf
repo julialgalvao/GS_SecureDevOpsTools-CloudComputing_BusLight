@@ -1,0 +1,47 @@
+variable "subscription_id" {
+  description = "ID da assinatura Azure for Students (Subscriptions no portal). Vem do terraform.tfvars, fora do Git."
+  type        = string
+}
+
+variable "regiao" {
+  description = "Região do Azure (East US é a recomendada nas aulas por custo)"
+  type        = string
+  default     = "eastus"
+}
+
+variable "tamanho_vm" {
+  description = "Tamanho da VM"
+  type        = string
+  default     = "Standard_B1s"
+}
+
+variable "dns_label" {
+  description = "Prefixo do endereço público (<prefixo>.<regiao>.cloudapp.azure.com). Precisa ser único na região."
+  type        = string
+  default     = "buslight-gs"
+}
+
+variable "cidr_http" {
+  description = "Quem pode acessar o site na porta 80 (público, é o MVP do cidadão)"
+  type        = string
+  default     = "*"
+}
+
+variable "repositorio" {
+  description = "Repositório clonado na VM (docker-compose.yml e config do nginx)"
+  type        = string
+  default     = "https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight.git"
+}
+
+variable "imagem" {
+  description = "Imagem do app publicada pelo pipeline no GHCR"
+  type        = string
+  default     = "ghcr.io/julialgalvao/gs_securedevopstools-cloudcomputing_buslight:latest"
+}
+
+variable "metrics_token" {
+  description = "Token que o Prometheus usa em /metrics. Vem do terraform.tfvars (fora do Git). Vazio: a VM gera um aleatório."
+  type        = string
+  default     = ""
+  sensitive   = true
+}

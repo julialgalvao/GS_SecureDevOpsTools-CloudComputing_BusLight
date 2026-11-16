@@ -8,6 +8,11 @@ infra/.terraform/
 infra/*.tfstate
 infra/*.tfstate.*
 infra/*.tfvars
+infra-azure/.terraform/
+infra-azure/*.tfstate
+infra-azure/*.tfstate.*
+infra-azure/*.tfvars
+!infra-azure/terraform.tfvars.example
 !infra/terraform.tfvars.example
 infra/.terraform.lock.hcl.bak
 crash.log
