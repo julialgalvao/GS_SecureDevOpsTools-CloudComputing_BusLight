@@ -69,7 +69,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | Arquitetura: componentes | App web + API (este repositório) · Pipeline de dados · Assistente de IA generativa · Visão computacional no ponto · Robô de alertas (RPA) · Totem físico com sensores (Maker) |
 | Fontes de dados | SPTrans Olho Vivo, Open-Meteo, IBGE e cadastro de usuários simulado |
 | Modelos de IA utilizados | LLM local com RAG e agente (assistente do passageiro) · YOLO customizado (lotação do ponto) |
-| URL do MVP e repositórios | MVP: [preencher] · Cloud: [este repositório](https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight) · Dados: [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
+| URL do MVP e repositórios | MVP: [http://34.237.158.254](http://34.237.158.254) · Cloud: [este repositório](https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight) · Dados: [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
 | Indicadores de impacto | Minutos de espera evitados, pontos críticos identificados, usuários noturnos atendidos |
 | ODS conectados | 11, 10 e 9 |
 
@@ -393,6 +393,6 @@ Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://loca
 
 | Item | Link |
 |---|---|
-| MVP (URL pública) | [preencher] |
+| MVP (URL pública) | [http://34.237.158.254](http://34.237.158.254) |
 | Repositório de Dados | [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
 | Relatório PDF | [preencher] |

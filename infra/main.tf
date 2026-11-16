@@ -83,7 +83,7 @@ resource "aws_security_group" "web" {
 # Conta pessoal: o Terraform cria a role que permite o acesso pelo SSM (sem SSH).
 # AWS Academy (Learner Lab): não dá para criar role; use perfil_instancia = "LabInstanceProfile".
 resource "aws_iam_role" "ssm" {
-  count = var.perfil_instancia == "" ? 1 : 0
+  count = var.perfil_instancia == "" && !var.sem_perfil ? 1 : 0
   name  = "buslight-ssm"
 
   assume_role_policy = jsonencode({
@@ -97,19 +97,19 @@ resource "aws_iam_role" "ssm" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm" {
-  count      = var.perfil_instancia == "" ? 1 : 0
+  count      = var.perfil_instancia == "" && !var.sem_perfil ? 1 : 0
   role       = aws_iam_role.ssm[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_iam_instance_profile" "ssm" {
-  count = var.perfil_instancia == "" ? 1 : 0
+  count = var.perfil_instancia == "" && !var.sem_perfil ? 1 : 0
   name  = "buslight-ssm"
   role  = aws_iam_role.ssm[0].name
 }
 
 locals {
-  perfil_instancia = var.perfil_instancia != "" ? var.perfil_instancia : one(aws_iam_instance_profile.ssm[*].name)
+  perfil_instancia = var.sem_perfil ? null : (var.perfil_instancia != "" ? var.perfil_instancia : one(aws_iam_instance_profile.ssm[*].name))
 }
 
 # ------------------------------------------------------------------ servidor

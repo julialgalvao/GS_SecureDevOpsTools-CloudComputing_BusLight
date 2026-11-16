@@ -16,6 +16,12 @@ variable "perfil_instancia" {
   default     = ""
 }
 
+variable "sem_perfil" {
+  description = "Cria a EC2 sem instance profile. Para labs que não permitem iam:PassRole; sem perfil não há deploy pelo SSM, a máquina baixa a imagem sozinha ao ligar."
+  type        = bool
+  default     = false
+}
+
 variable "cidr_http" {
   description = "Quem pode acessar o site na porta 80 (público, é o MVP do cidadão)"
   type        = string
