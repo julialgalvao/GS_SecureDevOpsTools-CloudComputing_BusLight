@@ -1,5 +1,5 @@
 variable "regiao" {
-  description = "Região da AWS (o AWS Academy Learner Lab usa us-east-1)"
+  description = "Região da AWS (us-east-1 funciona em conta pessoal e no AWS Academy Learner Lab)"
   type        = string
   default     = "us-east-1"
 }
@@ -11,9 +11,9 @@ variable "tipo_instancia" {
 }
 
 variable "perfil_instancia" {
-  description = "Instance profile da EC2. No Learner Lab não dá para criar IAM Role, então usamos o LabInstanceProfile que já existe."
+  description = "Instance profile já existente. Deixe vazio para o Terraform criar a role do SSM (conta pessoal). No AWS Academy Learner Lab use LabInstanceProfile, porque lá não dá para criar IAM Role."
   type        = string
-  default     = "LabInstanceProfile"
+  default     = ""
 }
 
 variable "cidr_http" {

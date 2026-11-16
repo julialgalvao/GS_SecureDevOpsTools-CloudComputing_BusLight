@@ -79,13 +79,46 @@ resource "aws_security_group" "web" {
   tags = { Name = "buslight-web" }
 }
 
+# ------------------------------------------------------------------ acesso da instância (SSM)
+# Conta pessoal: o Terraform cria a role que permite o acesso pelo SSM (sem SSH).
+# AWS Academy (Learner Lab): não dá para criar role; use perfil_instancia = "LabInstanceProfile".
+resource "aws_iam_role" "ssm" {
+  count = var.perfil_instancia == "" ? 1 : 0
+  name  = "buslight-ssm"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Action    = "sts:AssumeRole"
+      Principal = { Service = "ec2.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm" {
+  count      = var.perfil_instancia == "" ? 1 : 0
+  role       = aws_iam_role.ssm[0].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ssm" {
+  count = var.perfil_instancia == "" ? 1 : 0
+  name  = "buslight-ssm"
+  role  = aws_iam_role.ssm[0].name
+}
+
+locals {
+  perfil_instancia = var.perfil_instancia != "" ? var.perfil_instancia : one(aws_iam_instance_profile.ssm[*].name)
+}
+
 # ------------------------------------------------------------------ servidor
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = var.tipo_instancia
   subnet_id              = aws_subnet.publica.id
   vpc_security_group_ids = [aws_security_group.web.id]
-  iam_instance_profile   = var.perfil_instancia
+  iam_instance_profile   = local.perfil_instancia
 
   user_data = templatefile("${path.module}/user_data.sh.tftpl", {
     repositorio = var.repositorio
