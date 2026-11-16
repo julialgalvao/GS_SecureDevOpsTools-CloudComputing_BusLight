@@ -6,19 +6,19 @@ variable "subscription_id" {
 variable "regiao" {
   description = "Região do Azure (a política da assinatura de estudante só permite eastus2, canadacentral, northcentralus, centralus e southcentralus)"
   type        = string
-  default     = "centralus"
+  default     = "northcentralus"
 }
 
 variable "tamanho_vm" {
   description = "Tamanho da VM"
   type        = string
-  default     = "Standard_B2pts_v2"
+  default     = "Standard_B2ats_v2"
 }
 
 variable "sku_so" {
   description = "Imagem do Ubuntu: server-arm64 para tamanhos ARM (terminam em p, como Standard_B2pts_v2) ou server para x86"
   type        = string
-  default     = "server-arm64"
+  default     = "server"
 }
 
 variable "dns_label" {
