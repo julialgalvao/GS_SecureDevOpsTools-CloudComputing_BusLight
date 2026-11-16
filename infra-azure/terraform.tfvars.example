@@ -1,6 +1,6 @@
 # Copie para terraform.tfvars e preencha. O terraform.tfvars não vai para o Git.
 subscription_id = "00000000-0000-0000-0000-000000000000" # Subscriptions -> Azure for Students -> ID
-regiao          = "eastus"
+regiao          = "eastus2"
 tamanho_vm      = "Standard_B1s"
 dns_label       = "buslight-gs"
 # metrics_token = "gere com: openssl rand -hex 24"

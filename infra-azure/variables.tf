@@ -4,9 +4,9 @@ variable "subscription_id" {
 }
 
 variable "regiao" {
-  description = "Região do Azure (East US é a recomendada nas aulas por custo)"
+  description = "Região do Azure (a política da assinatura de estudante só permite eastus2, canadacentral, northcentralus, centralus e southcentralus)"
   type        = string
-  default     = "eastus"
+  default     = "eastus2"
 }
 
 variable "tamanho_vm" {
