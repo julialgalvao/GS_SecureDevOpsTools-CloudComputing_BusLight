@@ -9,8 +9,12 @@ apt-get update
 apt-get install -y docker.io git curl openssl
 systemctl enable --now docker
 
+# VM de 1 GB: um swap pequeno evita falta de memória na hora do pull
+fallocate -l 1G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+
 mkdir -p /usr/local/lib/docker/cli-plugins
-curl -fsSL https://github.com/docker/compose/releases/download/v5.7.1/docker-compose-linux-x86_64 \
+curl -fsSL https://github.com/docker/compose/releases/download/v5.7.1/docker-compose-linux-$(uname -m) \
   -o /usr/local/lib/docker/cli-plugins/docker-compose
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
