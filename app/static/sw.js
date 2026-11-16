@@ -1,10 +1,11 @@
 // Service worker: guarda o site e as últimas respostas da API para funcionar com internet ruim.
-const CACHE = "buslight-v1";
+const CACHE = "buslight-v2";
 const ARQUIVOS = [
   "/",
   "/static/style.css",
   "/static/app.js",
   "/static/icone.svg",
+  "/static/hero.svg",
   "/static/vendor/leaflet/leaflet.css",
   "/static/vendor/leaflet/leaflet.js",
 ];

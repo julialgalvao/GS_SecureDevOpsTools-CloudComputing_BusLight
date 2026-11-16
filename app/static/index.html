@@ -4,25 +4,41 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="BusLight: saiba quando o ônibus chega e espere menos no ponto.">
-  <meta name="theme-color" content="#1F3A5F">
+  <meta name="theme-color" content="#0E1F3D">
   <title>BusLight – Luz para você ir a qualquer destino</title>
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=3">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="topo">
-    <div class="marca">
-      <img src="/static/icone.svg" alt="" width="40" height="40">
-      <div>
-        <h1>BusLight</h1>
-        <p class="slogan">Luz para você ir a qualquer destino.</p>
+    <div class="topo-barra">
+      <div class="marca">
+        <img src="/static/icone.svg" alt="" width="44" height="44">
+        <div>
+          <h1>BusLight</h1>
+          <p class="slogan">Luz para você ir a qualquer destino.</p>
+        </div>
       </div>
+      <p class="selo">Zona Sul · São Paulo</p>
     </div>
-    <p id="resumo" class="resumo" aria-live="polite">Carregando dados...</p>
+
+    <div class="hero">
+      <p class="hero-chamada">Ponto de ônibus inteligente</p>
+      <p class="hero-titulo">Espere <em>menos</em>.<br>Chegue <em>melhor</em>.</p>
+      <p class="hero-texto">Veja quando o ônibus chega e a que horas sair de casa, com dados reais da SPTrans nos corredores da zona sul.</p>
+
+      <div class="numeros" aria-label="Resumo dos dados">
+        <div class="numero"><span id="n-pontos" class="valor">–</span><span class="rotulo">pontos monitorados</span></div>
+        <div class="numero"><span id="n-espera" class="valor">–</span><span class="rotulo">min de espera média</span></div>
+        <div class="numero"><span id="n-noite" class="valor">–</span><span class="rotulo">min à noite</span></div>
+        <div class="numero"><span id="n-coletas" class="valor">–</span><span class="rotulo">coletas na base</span></div>
+      </div>
+      <p id="resumo" class="leitor" aria-live="polite">Carregando dados...</p>
+    </div>
   </header>
 
   <nav class="abas" role="tablist" aria-label="Seções do BusLight">
@@ -113,6 +129,6 @@
   </footer>
 
   <script src="/static/vendor/leaflet/leaflet.js"></script>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=2"></script>
 </body>
 </html>
