@@ -9,7 +9,7 @@
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="/static/style.css?v=6">
+  <link rel="stylesheet" href="/static/style.css?v=7">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -158,7 +158,7 @@
         <div class="faixa-texto">
           <p class="faixa-etiqueta etiqueta-turquesa">A solução</p>
           <h3>Dados reais viram um aviso simples</h3>
-          <p>Todo dia, um robô consulta a previsão de chegada dos ônibus, o clima e os dados dos bairros. Depois conferimos tudo, descartamos o que está errado e transformamos o resultado em mapa, ranking e horário para sair de casa.</p>
+          <p>Todo dia, o BusLight reúne a previsão de chegada dos ônibus, o clima e os dados dos bairros. Depois conferimos tudo, descartamos o que está errado e transformamos o resultado em mapa, ranking e horário para sair de casa.</p>
           <ol class="passos-curtos">
             <li><strong>Coletamos</strong> 4 vezes por dia, em 144 pontos da zona sul.</li>
             <li><strong>Organizamos</strong> os dados e descartamos o que está errado.</li>
@@ -205,20 +205,20 @@
       <h3 class="sobre-titulo">Nosso diferencial</h3>
       <div class="diferenciais">
         <article class="dif"><span class="dif-icone"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg></span><h4>Pensado para a noite</h4><p>Em 12/11, às 22h, circulavam 8.156 ônibus, contra 11.448 às 18h. Menos ônibus significa mais tempo exposto no ponto.</p></article>
-        <article class="dif"><span class="dif-icone"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><h4>Dado real, não estimativa</h4><p>Cada número vem de coletas da SPTrans, e registros com GPS desatualizado são descartados.</p></article>
+        <article class="dif"><span class="dif-icone"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><h4>Dado real, não estimativa</h4><p>Cada número vem de medições reais dos ônibus da cidade, e registros com defeito são descartados.</p></article>
         <article class="dif"><span class="dif-icone"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="4.5" r="2"/><path d="M5 8.5h14M12 8.5V14M9 21l3-7 3 7"/></svg></span><h4>Para todo mundo</h4><p>Texto grande, contraste alto, uso por teclado e leitores de tela. Uma pessoa com baixa visão também usa.</p></article>
         <article class="dif"><span class="dif-icone"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><h4>Privacidade de verdade</h4><p>O telefone é guardado protegido e aparece mascarado. A localização é usada na hora e não é salva.</p></article>
       </div>
 
       <h3 class="sobre-titulo">Quem o BusLight ajuda</h3>
-      <ul class="pessoas" aria-label="Pessoas atendidas">
-        <li>Trabalhadores do turno da noite</li>
-        <li>Mulheres que voltam sozinhas</li>
-        <li>Idosos</li>
-        <li>Pessoas com deficiência</li>
-        <li>Estudantes</li>
-        <li>Quem mora longe do centro</li>
-      </ul>
+      <div class="pessoas-grade">
+        <article class="pessoa"><span class="icone c3"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg></span><div><h4>Quem trabalha à noite</h4><p>Sai tarde e volta mais tarde ainda. Sabendo a hora certa de sair, passa menos tempo esperando no escuro.</p></div></article>
+        <article class="pessoa"><span class="icone c2"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg></span><div><h4>Mulheres que voltam sozinhas</h4><p>Menos minutos parada no ponto à noite é mais segurança no caminho de casa.</p></div></article>
+        <article class="pessoa"><span class="icone c4"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h4>Idosos</h4><p>Planejam a saída sem ficar em pé esperando um ônibus que não vem.</p></div></article>
+        <article class="pessoa"><span class="icone c1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="4.5" r="2"/><path d="M5 8.5h14M12 8.5V14M9 21l3-7 3 7"/></svg></span><div><h4>Pessoas com deficiência</h4><p>Texto grande, contraste alto e leitor de tela: a informação chega para todo mundo.</p></div></article>
+        <article class="pessoa"><span class="icone c6"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span><div><h4>Estudantes</h4><p>Chegam à aula na hora, sem precisar sair duas horas mais cedo "por garantia".</p></div></article>
+        <article class="pessoa"><span class="icone c7"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><h4>Quem mora longe do centro</h4><p>Nos bairros mais distantes, cada minuto de espera pesa mais. É por eles que o BusLight começa.</p></div></article>
+      </div>
 
       <h3 class="sobre-titulo">Objetivos de Desenvolvimento Sustentável</h3>
       <div class="ods">
@@ -229,18 +229,13 @@
 
       <h3 class="sobre-titulo">Perguntas frequentes</h3>
       <div class="faq">
-        <details><summary>De onde vêm os dados?</summary><p>Da API pública Olho Vivo, da SPTrans, que informa a previsão de chegada dos ônibus. Também usamos o clima (Open-Meteo) e dados dos bairros (IBGE).</p></details>
+        <details><summary>De onde vêm os dados?</summary><p>De fontes públicas e oficiais: a previsão de chegada dos ônibus da cidade, o clima e dados dos bairros. Todas as fontes estão citadas no rodapé do app.</p></details>
         <details><summary>O que significa "espera média"?</summary><p>É o tempo, em minutos, entre a chegada de um ônibus de uma linha e o próximo, no ponto e no horário escolhidos, calculado com as coletas que fizemos.</p></details>
         <details><summary>Por que a espera à noite não é maior do que de dia?</summary><p>Na média, ela é parecida. O que muda à noite é que circulam bem menos ônibus, então perder um ônibus pesa mais e a pessoa fica mais tempo exposta no ponto.</p></details>
         <details><summary>O app guarda a minha localização?</summary><p>Não. A localização, quando usada, serve só naquele momento e não é gravada. O telefone do alerta é guardado protegido e aparece mascarado.</p></details>
         <details><summary>Quantos dados vocês têm?</summary><p>Por enquanto, 9 coletas em dois dias, nos 144 pontos dos corredores da zona sul. Por isso os números mostram uma tendência, e não uma regra definitiva.</p></details>
         <details><summary>Funciona sem internet boa?</summary><p>Funciona. O app guarda a última versão da tela e dos dados, e mostra o que já foi carregado quando a conexão cai.</p></details>
       </div>
-
-      <h3 class="sobre-titulo">Por trás do app</h3>
-      <ul class="tecnologias" aria-label="Tecnologias usadas">
-        <li>Airflow</li><li>Databricks</li><li>Python e FastAPI</li><li>Docker</li><li>Terraform</li><li>Azure</li><li>GitHub Actions</li><li>Gitleaks, Semgrep e Trivy</li><li>Prometheus e Grafana</li>
-      </ul>
 
       <div class="equipe">
         <p class="equipe-titulo">Feito pela equipe</p>
