@@ -10,7 +10,7 @@
   <rect x="22" y="34" width="86" height="46" rx="10" fill="#1F3A5F"/>
   <rect x="30" y="42" width="20" height="18" rx="3" fill="#FFD43B"/><rect x="55" y="42" width="20" height="18" rx="3" fill="#FFD43B"/><rect x="80" y="42" width="20" height="18" rx="3" fill="#FFD43B"/>
   <circle cx="42" cy="88" r="8" fill="#0E1F3D"/><circle cx="88" cy="88" r="8" fill="#0E1F3D"/>
-  <text x="65" y="128" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1F3A5F">SPTrans</text>
+  <text x="65" y="128" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1F3A5F">Ônibus</text>
 </g>
 <text x="135" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#0F8B8D">1. Coletamos</text>
 

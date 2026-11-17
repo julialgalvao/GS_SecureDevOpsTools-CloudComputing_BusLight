@@ -317,3 +317,10 @@ tbody tr:hover { background: #F9FBFE; }
 .faq summary { cursor: pointer; font-weight: 700; color: var(--azul); padding: .7rem 0; }
 .faq details[open] { background: var(--fundo); }
 .faq details p { margin: 0 0 .85rem !important; color: var(--suave); }
+
+/* ---------- quem o BusLight ajuda ---------- */
+.pessoas-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.pessoa { display: flex; gap: 1rem; align-items: flex-start; padding: 1.1rem; border-radius: 1.1rem; background: var(--cartao); border: 1px solid var(--linha); box-shadow: 0 4px 14px rgba(14, 31, 61, .05); }
+.pessoa .icone { flex: none; }
+.pessoa h4 { margin: .1rem 0 .25rem !important; }
+.pessoa p { color: var(--suave); font-size: .97rem; }
