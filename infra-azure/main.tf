@@ -129,5 +129,6 @@ resource "azurerm_linux_virtual_machine" "app" {
     repositorio = var.repositorio
     imagem      = var.imagem
     metrics     = var.metrics_token
+    sptrans     = var.sptrans_token
   }))
 }

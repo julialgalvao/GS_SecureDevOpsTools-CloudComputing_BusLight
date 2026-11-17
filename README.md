@@ -352,7 +352,8 @@ O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que d
 ├── infra/                         # alternativa: o mesmo ambiente em AWS (VPC, EC2, Elastic IP)
 ├── monitoring/
 │   ├── docker-compose.yml         # Prometheus + Grafana
-│   ├── iniciar.sh                 # gera o alvo e o token e sobe o monitoramento
+│   ├── iniciar.sh                 # gera o alvo e o token e sobe o monitoramento (Docker)
+│   ├── iniciar_local.sh           # o mesmo, sem Docker (Homebrew: prometheus e grafana)
 │   ├── disparar_alerta.sh         # gera respostas 503 para disparar o alerta BusLightErrosAltos
 │   ├── prometheus/                # prometheus.yml e alert.rules.yml
 │   └── grafana/                   # datasource e dashboard das 4 métricas de ouro (como código)
@@ -389,7 +390,7 @@ Acesse `http://localhost:8080` (no Codespaces, pela aba **Ports**).
 ```bash
 az login
 cd infra-azure
-cp terraform.tfvars.example terraform.tfvars   # preencha subscription_id e metrics_token
+cp terraform.tfvars.example terraform.tfvars   # preencha subscription_id, metrics_token e (opcional) sptrans_token
 terraform init
 terraform plan
 terraform apply
@@ -402,11 +403,14 @@ O `output` mostra a URL pública do MVP. Se o Azure recusar a região ou o taman
 3. Na primeira publicação, deixe o pacote da imagem público em **Packages → gs_securedevopstools-cloudcomputing_buslight → Package settings → Change visibility**, para a VM conseguir baixá-la.
 
 ### 4. Monitorar
+Com Docker (ou no Codespaces):
 ```bash
 cd monitoring
 MVP_HOST=buslight-gs.northcentralus.cloudapp.azure.com METRICS_TOKEN=<mesmo-token-do-secret> ./iniciar.sh
 ```
 Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://localhost:3000` (usuário `admin`, senha gerada no `monitoring/.env`), dashboard **BusLight – 4 métricas de ouro**.
+
+Sem Docker (por exemplo, no Mac): `brew install prometheus grafana` e depois `MVP_HOST=... METRICS_TOKEN=... ./iniciar_local.sh` (para parar, `./iniciar_local.sh parar`).
 
 **Para disparar os alertas:**
 - `BusLightErrosAltos`: `MVP_URL=http://buslight-gs.northcentralus.cloudapp.azure.com ./disparar_alerta.sh`, que gera respostas `503` por 4 minutos sem derrubar o site.

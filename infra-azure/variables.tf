@@ -45,6 +45,13 @@ variable "imagem" {
   default     = "ghcr.io/julialgalvao/gs_securedevopstools-cloudcomputing_buslight:latest"
 }
 
+variable "sptrans_token" {
+  description = "Token da API Olho Vivo (SPTrans) para a Chegada ao vivo. Vem do terraform.tfvars (fora do Git) e fica só no .env da VM. Vazio: a Chegada ao vivo mostra a espera média histórica."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "metrics_token" {
   description = "Token que o Prometheus usa em /metrics. Vem do terraform.tfvars (fora do Git). Vazio: a VM gera um aleatório."
   type        = string

@@ -27,7 +27,7 @@ METRICS_TOKEN="${metrics}"
 cat > .env <<EOF
 IMAGE=${imagem}
 HTTP_PORT=80
-SPTRANS_TOKEN=
+SPTRANS_TOKEN=${sptrans}
 METRICS_TOKEN=$METRICS_TOKEN
 EOF
 chmod 600 .env
