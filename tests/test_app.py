@@ -28,6 +28,11 @@ def test_aba_conheca_nos_existe():
     assert "ODS" in html or "Objetivos de Desenvolvimento" in html
 
 
+def test_pagina_inicial_nao_fica_em_cache():
+    assert cliente.get("/").headers["cache-control"] == "no-cache"
+    assert cliente.get("/sw.js").headers["cache-control"] == "no-cache"
+
+
 def test_site_abre():
     resp = cliente.get("/")
     assert resp.status_code == 200
