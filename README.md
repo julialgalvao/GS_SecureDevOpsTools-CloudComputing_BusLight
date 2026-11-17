@@ -55,6 +55,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Linhas** | Ranking das linhas com mais atraso | Ouro: `vw_mvp_ranking_linhas` |
 | **Saia de casa às...** | Horário recomendado para sair e esperar o mínimo | Ouro: `vw_mvp_saia_de_casa` |
 | **Meus alertas** | Ponto favorito e telefone **mascarado** | Ouro: `dim_usuario` |
+| **Conheça-nos** | O que o app faz, como funciona, diferencial, público atendido e ODS | Conteúdo estático + números do resumo |
 
 ---
 

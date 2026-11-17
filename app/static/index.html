@@ -9,7 +9,7 @@
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="/static/style.css?v=3">
+  <link rel="stylesheet" href="/static/style.css?v=4">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -47,6 +47,7 @@
     <button role="tab" id="aba-saia" aria-controls="painel-saia" aria-selected="false" tabindex="-1">Saia de casa às...</button>
     <button role="tab" id="aba-linhas" aria-controls="painel-linhas" aria-selected="false" tabindex="-1">Linhas</button>
     <button role="tab" id="aba-alertas" aria-controls="painel-alertas" aria-selected="false" tabindex="-1">Meus alertas</button>
+    <button role="tab" id="aba-sobre" aria-controls="painel-sobre" aria-selected="false" tabindex="-1">Conheça-nos</button>
   </nav>
 
   <main id="conteudo">
@@ -121,6 +122,101 @@
         Sua localização é usada só na hora e não é armazenada.
       </p>
     </section>
+    <section id="painel-sobre" role="tabpanel" aria-labelledby="aba-sobre" hidden>
+      <div class="sobre-abertura">
+        <p class="sobre-chamada">Conheça o BusLight</p>
+        <h2>Um ponto de ônibus que <em>avisa antes</em> de você chegar.</h2>
+        <p class="sobre-lead">
+          O BusLight mostra quanto tempo cada ponto da zona sul de São Paulo costuma esperar e diz a hora certa de sair de casa.
+          Quem pega ônibus à noite passa menos tempo parado no escuro.
+        </p>
+      </div>
+
+      <div class="sobre-numeros" aria-label="O BusLight em números">
+        <div class="sobre-numero n1"><span id="sobre-pontos" class="valor">–</span><span class="rotulo">pontos monitorados</span></div>
+        <div class="sobre-numero n2"><span id="sobre-espera" class="valor">–</span><span class="rotulo">min de espera média</span></div>
+        <div class="sobre-numero n3"><span id="sobre-noite" class="valor">–</span><span class="rotulo">min de espera à noite</span></div>
+        <div class="sobre-numero n4"><span id="sobre-coletas" class="valor">–</span><span class="rotulo">coletas de dados reais</span></div>
+      </div>
+
+      <h3 class="sobre-titulo">Do problema à solução</h3>
+      <div class="duo">
+        <article class="bloco bloco-problema">
+          <span class="bloco-icone" aria-hidden="true">😟</span>
+          <h4>O problema</h4>
+          <p>Na periferia, o ônibus demora e ninguém sabe quando vem. À noite a frota diminui e a pessoa espera em ponto escuro, sem saber se o ônibus já passou.</p>
+        </article>
+        <article class="bloco bloco-solucao">
+          <span class="bloco-icone" aria-hidden="true">💡</span>
+          <h4>A solução</h4>
+          <p>Dados reais da SPTrans viram um aviso simples: quanto se espera em cada ponto e a que horas sair de casa para esperar o mínimo.</p>
+        </article>
+      </div>
+
+      <h3 class="sobre-titulo">Como funciona</h3>
+      <ol class="passos">
+        <li class="passo p1">
+          <span class="passo-num" aria-hidden="true">1</span>
+          <h4>Coletamos</h4>
+          <p>4 vezes por dia, um robô busca a posição e a previsão dos ônibus (SPTrans), o clima (Open-Meteo) e os dados dos bairros (IBGE).</p>
+        </li>
+        <li class="passo p2">
+          <span class="passo-num" aria-hidden="true">2</span>
+          <h4>Tratamos</h4>
+          <p>Os dados passam por três camadas, de bruto a pronto, e as regras de qualidade descartam registros com erro de GPS.</p>
+        </li>
+        <li class="passo p3">
+          <span class="passo-num" aria-hidden="true">3</span>
+          <h4>Mostramos</h4>
+          <p>O app transforma tudo em mapa, ranking de linhas e o horário ideal para sair de casa. Funciona no celular, mesmo com internet ruim.</p>
+        </li>
+      </ol>
+
+      <h3 class="sobre-titulo">O que você encontra no app</h3>
+      <div class="recursos">
+        <article class="recurso r1"><span class="recurso-icone" aria-hidden="true">🗺️</span><h4>Mapa</h4><p>144 pontos coloridos pela espera média.</p><button type="button" class="ir-aba" data-aba="aba-mapa">Abrir o mapa</button></article>
+        <article class="recurso r2"><span class="recurso-icone" aria-hidden="true">📡</span><h4>Chegada ao vivo</h4><p>Os próximos ônibus do ponto, na hora.</p><button type="button" class="ir-aba" data-aba="aba-chegada">Ver chegadas</button></article>
+        <article class="recurso r3"><span class="recurso-icone" aria-hidden="true">🕒</span><h4>Saia de casa às...</h4><p>Quantos minutos de espera você evita.</p><button type="button" class="ir-aba" data-aba="aba-saia">Calcular</button></article>
+        <article class="recurso r4"><span class="recurso-icone" aria-hidden="true">📊</span><h4>Linhas</h4><p>O ranking das linhas que mais atrasam.</p><button type="button" class="ir-aba" data-aba="aba-linhas">Ver ranking</button></article>
+        <article class="recurso r5"><span class="recurso-icone" aria-hidden="true">🔔</span><h4>Meus alertas</h4><p>Aviso para o seu ponto favorito, com telefone protegido.</p><button type="button" class="ir-aba" data-aba="aba-alertas">Ver alertas</button></article>
+      </div>
+
+      <h3 class="sobre-titulo">Nosso diferencial</h3>
+      <div class="diferenciais">
+        <article class="dif"><span class="dif-icone" aria-hidden="true">🌙</span><h4>Pensado para a noite</h4><p>Em 12/11, às 22h, circulavam 8.156 ônibus, contra 11.448 às 18h. Menos ônibus significa mais exposição no ponto.</p></article>
+        <article class="dif"><span class="dif-icone" aria-hidden="true">🔎</span><h4>Dado real, não estimativa</h4><p>Cada número vem de coletas da SPTrans, com regras que removem registros de GPS desatualizado.</p></article>
+        <article class="dif"><span class="dif-icone" aria-hidden="true">♿</span><h4>Para todo mundo</h4><p>Texto grande, contraste alto, uso por teclado e leitores de tela. Uma pessoa com baixa visão também usa.</p></article>
+        <article class="dif"><span class="dif-icone" aria-hidden="true">🔒</span><h4>Privacidade de verdade</h4><p>O telefone é guardado com hash e aparece mascarado. A localização é usada na hora e não é salva.</p></article>
+      </div>
+
+      <h3 class="sobre-titulo">Quem o BusLight ajuda</h3>
+      <ul class="pessoas" aria-label="Pessoas atendidas">
+        <li>Trabalhadores do turno da noite</li>
+        <li>Mulheres que voltam sozinhas</li>
+        <li>Idosos</li>
+        <li>Pessoas com deficiência</li>
+        <li>Estudantes</li>
+        <li>Quem mora longe do centro</li>
+      </ul>
+
+      <h3 class="sobre-titulo">Objetivos de Desenvolvimento Sustentável</h3>
+      <div class="ods">
+        <article class="ods-cartao ods-11"><span class="ods-numero">11</span><div><h4>Cidades e comunidades sustentáveis</h4><p>Meta 11.2: transporte público mais previsível, seguro e acessível.</p></div></article>
+        <article class="ods-cartao ods-10"><span class="ods-numero">10</span><div><h4>Redução das desigualdades</h4><p>Meta 10.2: o foco é a periferia, onde a espera pesa mais.</p></div></article>
+        <article class="ods-cartao ods-9"><span class="ods-numero">9</span><div><h4>Indústria, inovação e infraestrutura</h4><p>Meta 9.1: infraestrutura de informação em nuvem, segura e reproduzível.</p></div></article>
+      </div>
+
+      <h3 class="sobre-titulo">Por trás do app</h3>
+      <ul class="tecnologias" aria-label="Tecnologias usadas">
+        <li>Airflow</li><li>Databricks</li><li>Python e FastAPI</li><li>Docker</li><li>Terraform</li><li>Azure</li><li>GitHub Actions</li><li>Gitleaks, Semgrep e Trivy</li><li>Prometheus e Grafana</li>
+      </ul>
+
+      <div class="equipe">
+        <p class="equipe-titulo">Feito pela equipe</p>
+        <p class="equipe-nomes">Aline Fernandes Zeppelini · Camilly Breitbach Ishida · Julia Leite Galvão</p>
+        <p class="equipe-escola">FIAP · Engenharia de Software · Global Solution 2026.2 (CitizenTech)</p>
+      </div>
+    </section>
   </main>
 
   <footer class="rodape">
@@ -129,6 +225,6 @@
   </footer>
 
   <script src="/static/vendor/leaflet/leaflet.js"></script>
-  <script src="/static/app.js?v=2"></script>
+  <script src="/static/app.js?v=3"></script>
 </body>
 </html>

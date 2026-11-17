@@ -21,6 +21,13 @@ def test_health():
     assert "versao" in resp.json()
 
 
+def test_aba_conheca_nos_existe():
+    html = cliente.get("/").text
+    assert 'id="aba-sobre"' in html
+    assert 'id="painel-sobre"' in html
+    assert "ODS" in html or "Objetivos de Desenvolvimento" in html
+
+
 def test_site_abre():
     resp = cliente.get("/")
     assert resp.status_code == 200
