@@ -290,3 +290,37 @@ tbody tr:hover { background: #F9FBFE; }
   .faixa { grid-template-columns: 1fr; gap: 1rem; }
   .faixa.inversa .faixa-img { order: 0; }
 }
+
+/* ---------- ajustes da aba Conheça-nos (v3) ---------- */
+#painel-sobre .sobre-lead { margin: .5rem auto 0; max-width: 640px; text-align: center; }
+.sobre-intro { max-width: 760px; margin: 0 0 1.25rem !important; color: var(--suave); }
+.ico { width: 26px; height: 26px; display: block; }
+.icone { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 14px; color: #FFFFFF; }
+.icone.c1, .icone.r1 { background: var(--azul); }
+.icone.c2, .icone.r2 { background: var(--turquesa); }
+.icone.c3, .icone.r3 { background: var(--coral); }
+.icone.c4, .icone.r4 { background: var(--laranja); }
+.icone.c5, .icone.r5 { background: #7A5A00; }
+.icone.c6 { background: #5B3E96; }
+.icone.c7 { background: #1E7B3A; }
+.dif-icone { color: var(--azul); }
+.materias { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+.materia { padding: 1.15rem; border-radius: 1.1rem; background: var(--fundo); border: 1px solid var(--linha); }
+.materia h4 { margin-top: .6rem !important; }
+.materia p { color: var(--suave); font-size: .97rem; }
+.materia .materia-etiqueta { display: inline-block; margin: .6rem 0 0; padding: .1rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--texto); }
+.materia-etiqueta.neste { background: #DDF3E4; color: var(--verde); }
+.materia-etiqueta.projeto { background: #E8EDF6; color: var(--azul); }
+.recurso .icone { margin-bottom: .35rem; }
+.faq { display: grid; gap: .6rem; }
+.faq details { border: 1px solid var(--linha); border-radius: .9rem; background: var(--cartao); padding: .15rem 1rem; }
+.faq summary { cursor: pointer; font-weight: 700; color: var(--azul); padding: .7rem 0; }
+.faq details[open] { background: var(--fundo); }
+.faq details p { margin: 0 0 .85rem !important; color: var(--suave); }
+
+/* ---------- quem o BusLight ajuda ---------- */
+.pessoas-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.pessoa { display: flex; gap: 1rem; align-items: flex-start; padding: 1.1rem; border-radius: 1.1rem; background: var(--cartao); border: 1px solid var(--linha); box-shadow: 0 4px 14px rgba(14, 31, 61, .05); }
+.pessoa .icone { flex: none; }
+.pessoa h4 { margin: .1rem 0 .25rem !important; }
+.pessoa p { color: var(--suave); font-size: .97rem; }
