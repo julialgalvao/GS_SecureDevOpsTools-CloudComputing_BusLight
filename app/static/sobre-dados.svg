@@ -18,11 +18,11 @@
   <ellipse cx="65" cy="30" rx="60" ry="18" fill="#B87333"/><rect x="5" y="30" width="120" height="30" fill="#B87333"/><ellipse cx="65" cy="60" rx="60" ry="18" fill="#B87333"/>
   <ellipse cx="65" cy="76" rx="60" ry="18" fill="#9AA6B8"/><rect x="5" y="76" width="120" height="30" fill="#9AA6B8"/><ellipse cx="65" cy="106" rx="60" ry="18" fill="#9AA6B8"/>
   <ellipse cx="65" cy="122" rx="60" ry="18" fill="#FFD43B"/><rect x="5" y="122" width="120" height="30" fill="#FFD43B"/><ellipse cx="65" cy="152" rx="60" ry="18" fill="#FFD43B"/>
-  <text x="65" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Bronze</text>
-  <text x="65" y="102" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0E1F3D">Prata</text>
-  <text x="65" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0E1F3D">Ouro</text>
+  <text x="65" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Brutos</text>
+  <text x="65" y="102" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0E1F3D">Limpos</text>
+  <text x="65" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0E1F3D">Prontos</text>
 </g>
-<text x="320" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#0F8B8D">2. Tratamos</text>
+<text x="320" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#0F8B8D">2. Organizamos</text>
 
 <g transform="translate(450 100)">
   <rect width="120" height="200" rx="22" fill="#0E1F3D"/>
@@ -38,5 +38,5 @@
 
 <path d="M205 205 H245" stroke="#1F3A5F" stroke-width="3.5" stroke-dasharray="7 6" marker-end="url(#seta)" fill="none"/>
 <path d="M395 205 H440" stroke="#1F3A5F" stroke-width="3.5" stroke-dasharray="7 6" marker-end="url(#seta)" fill="none"/>
-<text x="320" y="385" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#5B6780">4 coletas por dia · 5 regras de qualidade · modelo dimensional</text>
+<text x="320" y="385" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#5B6780">4 coletas por dia · dados conferidos antes de chegar ao app</text>
 </svg>
