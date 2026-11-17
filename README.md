@@ -3,7 +3,9 @@
 > *Luz para você ir a qualquer destino.*
 > Global Solution 2026.2 · CitizenTech · FIAP · Engenharia de Software · 4º ano (4ES)
 
-Componente **Produção** do BusLight — atividade **Deploy Blindado**: o MVP no ar na AWS, empacotado em container, com infraestrutura criada por **Terraform**, pipeline **DevSecOps** que barra segredo vazado e vulnerabilidade antes de chegar ao cidadão, e observabilidade com **Prometheus e Grafana**.
+**MVP no ar:** [http://buslight-gs.northcentralus.cloudapp.azure.com](http://buslight-gs.northcentralus.cloudapp.azure.com)
+
+Componente **Produção** do BusLight — atividade **Deploy Blindado**: o MVP no ar no **Microsoft Azure**, empacotado em container, com infraestrutura criada por **Terraform**, pipeline **DevSecOps** que barra segredo vazado e vulnerabilidade antes de chegar ao cidadão, e observabilidade com **Prometheus e Grafana**.
 
 ---
 
@@ -55,7 +57,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Linhas** | Ranking das linhas com mais atraso | Ouro: `vw_mvp_ranking_linhas` |
 | **Saia de casa às...** | Horário recomendado para sair e esperar o mínimo | Ouro: `vw_mvp_saia_de_casa` |
 | **Meus alertas** | Ponto favorito e telefone **mascarado** | Ouro: `dim_usuario` |
-| **Conheça-nos** | O que o app faz, como funciona, diferencial, público atendido e ODS | Conteúdo estático + números do resumo |
+| **Conheça-nos** | O que o app faz, como funciona, diferencial, público atendido, ODS e equipe | Conteúdo do app + números do resumo |
 
 ---
 
@@ -70,7 +72,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | Arquitetura: componentes | App web + API (este repositório) · Pipeline de dados · Assistente de IA generativa · Visão computacional no ponto · Robô de alertas (RPA) · Totem físico com sensores (Maker) |
 | Fontes de dados | SPTrans Olho Vivo, Open-Meteo, IBGE e cadastro de usuários simulado |
 | Modelos de IA utilizados | LLM local com RAG e agente (assistente do passageiro) · YOLO customizado (lotação do ponto) |
-| URL do MVP e repositórios | MVP: [http://34.237.158.254](http://34.237.158.254) · Cloud: [este repositório](https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight) · Dados: [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
+| URL do MVP e repositórios | MVP: [http://buslight-gs.northcentralus.cloudapp.azure.com](http://buslight-gs.northcentralus.cloudapp.azure.com) · Cloud: [este repositório](https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight) · Dados: [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
 | Indicadores de impacto | Minutos de espera evitados, pontos críticos identificados, usuários noturnos atendidos |
 | ODS conectados | 11, 10 e 9 |
 
@@ -83,7 +85,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Quem é o cidadão beneficiado?** | O trabalhador da periferia de São Paulo que depende do ônibus, principalmente em horário noturno |
 | **Qual problema será resolvido?** | A espera longa, imprevisível e insegura no ponto de ônibus |
 | **Como a solução funcionará?** | Um app web acessível mostra a chegada real dos ônibus, os pontos com maior espera e a hora certa de sair de casa, com dados reais da SPTrans tratados no lakehouse |
-| **Quais tecnologias serão empregadas?** | Neste componente: Python (FastAPI), Docker, Terraform, AWS (EC2, VPC, Elastic IP), GitHub Actions, Gitleaks, Semgrep, Trivy, Prometheus e Grafana |
+| **Quais tecnologias serão empregadas?** | Neste componente: Python (FastAPI), Docker, Terraform, Azure (VM Linux, rede virtual, IP público estático), GitHub Actions, Gitleaks, Semgrep, Trivy, Prometheus e Grafana |
 | **Quem participará do ecossistema?** | Passageiros (usam de graça), Prefeitura e SPTrans (painel de gestão), empresas de mídia em ponto de ônibus e empresas com funcionários de turno noturno |
 | **Como o impacto poderá ser medido e ampliado?** | Medido pelos minutos de espera evitados e pelo uso do app em horário noturno; ampliado replicando a infraestrutura por código (Terraform) para outras cidades |
 
@@ -110,19 +112,19 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 │  (segredo)   (código)                     (CVE)                   (pull)  │
 └──────────────────────────────────────────────────────────────────┬────────┘
                                                                    │
-              ┌────────────────────── AWS (criada por Terraform) ──▼────────┐
-              │  VPC + subnet pública                                       │
-              │  ┌────────────── EC2 (Amazon Linux) ──────────────┐         │
-  Cidadão ───▶│  │  docker compose                                 │         │
-  (HTTP 80)   │  │   ├─ nginx (porta 80, proxy reverso)            │         │
-              │  │   └─ app BusLight (FastAPI, usuário não root)   │──▶ API SPTrans
-              │  │        /, /api/*, /health, /metrics              │         │
-              │  └─────────────────────────────────────────────────┘         │
-              │  Security Group: entrada só 80 · sem SSH, sem porta admin  │
-              │  Elastic IP: endereço fixo do MVP                            │
-              │  Sem instance profile (labs sem iam:PassRole) · deploy: pull │
-              └──────────────────────────────────────────────────────────────┘
-                          ▲ scrape /metrics
+            ┌──────────────── Azure (criada por Terraform) ───────▼────────┐
+            │  Resource group · rede virtual · sub-rede pública             │
+            │  ┌────────────── VM Linux (Ubuntu) ───────────────┐          │
+Cidadão ───▶│  │  docker compose                                 │          │
+(HTTP 80)   │  │   ├─ nginx (porta 80, proxy reverso)            │          │
+            │  │   ├─ app BusLight (FastAPI, usuário não root)   │──▶ API SPTrans
+            │  │   └─ node-exporter (métricas da máquina)        │          │
+            │  └─────────────────────────────────────────────────┘          │
+            │  NSG: entrada só na porta 80 · sem SSH, sem porta admin       │
+            │  IP público estático com nome DNS fixo                        │
+            │  Sem identidade gerenciada · deploy por pull (timer na VM)    │
+            └───────────────────────────────────────────────────────────────┘
+                          ▲ scrape /metrics e /node-metrics (token)
               ┌───────────┴────────────┐
               │ Prometheus + Grafana   │  (local, apontando para a URL pública)
               │ dashboard + alerta     │
@@ -151,10 +153,10 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 
 | Item | Como é feito |
 |---|---|
-| Imagem enxuta | `python:3.12-slim` com **multi-stage build**; só as dependências de produção; `.dockerignore` deixa de fora testes, infra e docs |
+| Imagem enxuta | `python:3.15-slim` com **multi-stage build**; só as dependências de produção; `.dockerignore` deixa de fora testes, infra e docs |
 | Usuário não root | `USER buslight` (UID 10001, sem shell) |
 | Sem segredo na imagem | Token da SPTrans entra só como variável de ambiente em tempo de execução; `.dockerignore` exclui `.env` |
-| Healthcheck | `HEALTHCHECK` chamando `/health`; o nginx só sobe depois do app saudável |
+| Healthcheck | `HEALTHCHECK` chamando `/health`, que também devolve o commit que gerou a imagem; o nginx só sobe depois do app saudável |
 | Endurecimento | Container do app com sistema de arquivos **somente leitura**, `cap_drop: ALL` e `no-new-privileges` |
 | Stack | `docker compose up` sobe app + nginx (proxy reverso com cabeçalhos de segurança, CSP e limite de requisições por IP) |
 
@@ -162,23 +164,35 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 
 ## ☁️ Infraestrutura como código (Terraform)
 
+A infraestrutura de produção está em [`infra-azure/`](infra-azure/) e cria **9 recursos** com `terraform apply`:
+
 | Recurso | Função |
 |---|---|
-| `aws_vpc`, `aws_subnet`, `aws_internet_gateway`, `aws_route_table` | Rede própria do BusLight |
-| `aws_security_group` | Entrada **apenas na porta 80**; nenhuma porta administrativa aberta |
-| `aws_instance` | EC2 que roda a stack com Docker (instalado via `user_data`); não há SSH nem porta administrativa; o app é atualizado por *pull* (timer `buslight-atualiza`) |
-| `aws_iam_role` + `aws_iam_instance_profile` | Opcionais. Em conta pessoal o Terraform cria uma role mínima de SSM; em labs que bloqueiam `iam:PassRole`, `sem_perfil = true` sobe a EC2 sem perfil |
-| `aws_eip` | Elastic IP: o endereço do MVP não muda quando a instância é parada e ligada de novo |
-| `output` | IP/URL pública do MVP e ID da instância |
+| `azurerm_resource_group` | Agrupa tudo do BusLight; apagar o grupo apaga o custo |
+| `azurerm_virtual_network` + `azurerm_subnet` | Rede própria do BusLight |
+| `azurerm_network_security_group` | Entrada **apenas na porta 80**; todo o resto fica bloqueado |
+| `azurerm_public_ip` | IP **estático** com nome DNS fixo (`buslight-gs.northcentralus.cloudapp.azure.com`) |
+| `azurerm_network_interface` | Liga a VM à sub-rede e ao IP público |
+| `azurerm_linux_virtual_machine` | VM Ubuntu que roda a stack com Docker (instalado por `custom_data`); não há SSH nem porta administrativa |
+| `tls_private_key` | O Azure exige uma chave na criação da VM; ela fica só no state e a porta 22 está fechada |
 
 **Boas práticas exigidas:**
-- `terraform.tfstate` e `*.tfvars` **fora do repositório** (no `.gitignore`).
-- Porta 22 **nunca** aberta para `0.0.0.0/0` — não há SSH nem outra porta administrativa. A máquina busca a versão nova sozinha, e nada entra por fora.
-- Região, tipo de instância e tags em variáveis (`variables.tf`), com exemplo em `terraform.tfvars.example`.
+- `terraform.tfstate` e `*.tfvars` **fora do repositório** (no `.gitignore`); o repositório só tem o `terraform.tfvars.example`.
+- Porta 22 **nunca** aberta para `0.0.0.0/0`: não há SSH nem outra porta administrativa. A VM busca a versão nova sozinha, e nada entra por fora.
+- Região, tamanho da VM e nome DNS em variáveis (`variables.tf`).
 
-**Detalhes de segurança a mais:** IMDSv2 obrigatório (protege as credenciais da instância), disco **criptografado** e tags padrão em todos os recursos. O Terraform também passa pelo **Trivy** no pipeline; as duas exceções aceitas (site público na porta 80 e saída para a internet) estão justificadas no [`.trivyignore`](.trivyignore).
+**Detalhes de segurança a mais:** nenhuma identidade nem credencial na VM, disco gerenciado com criptografia do Azure, tags padrão e o Terraform varrido pelo **Trivy** no pipeline (a única exceção, o site público na porta 80, está justificada no [`.trivyignore`](.trivyignore)).
 
-> **Conta pessoal ou AWS Academy:** por padrão o Terraform cria a role do SSM. No **AWS Academy**, que não permite criar IAM Roles e pode bloquear `iam:PassRole`, defina `sem_perfil = true` no `terraform.tfvars`. No lab, as credenciais são temporárias e a instância é desligada quando a sessão termina; o Elastic IP mantém a mesma URL e o `user_data`/`restart: always` sobe o app sozinho quando a máquina liga de novo.
+**Restrições da assinatura Azure for Students que moldaram a infraestrutura**
+- Uma política da assinatura só permite criar recursos em `eastus2`, `canadacentral`, `northcentralus`, `centralus` e `southcentralus`.
+- Nas regiões `eastus2` e `centralus` não havia VM x86 barata disponível para a assinatura (`SkuNotAvailable`). Em `northcentralus` o tamanho `Standard_B2ats_v2` (2 vCPUs, 1 GB) está liberado, e é o usado.
+- A VM tem 1 GB de memória, então o script de inicialização cria um swap de 1 GB para o primeiro `docker pull`.
+
+**Deploy por *pull*:** como não há SSH nem acesso de entrada, um timer do systemd (`buslight-atualiza`) confere a cada minuto se há imagem nova no GHCR e atualiza o app. O pipeline publica a imagem e depois **espera o `/health` público devolver o commit dele**.
+
+> **Alternativa em AWS:** a pasta [`infra/`](infra/) tem o mesmo ambiente em AWS (VPC, Security Group só na porta 80, EC2, Elastic IP). Ele foi testado no AWS Academy e criou os 8 recursos, mas os laboratórios do curso apagam tudo quando a sessão termina, então não servem para manter o MVP no ar durante a correção. Por isso a produção é no Azure.
+
+---
 
 ---
 
@@ -190,20 +204,20 @@ Workflow em [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml)
 |---|---|---|
 | 1. Segredos | **Gitleaks** | Encontra token, chave ou senha no código ou no histórico |
 | 2. Código (SAST) | **Semgrep** (`p/security-audit`, `p/python`, `p/dockerfile`) | Encontra padrão de código vulnerável |
-| 3. Testes | **pytest** (13 testes da API, incluindo LGPD e controle de acesso) | Algum teste falha |
+| 3. Testes | **pytest** (14 testes da API, incluindo LGPD e controle de acesso) | Algum teste falha |
 | 4. Infra como código | **Trivy** (scan de configuração) | Terraform ou Dockerfile com configuração insegura `HIGH`/`CRITICAL` |
-| 5. Terraform | `terraform fmt -check` e `terraform validate` | Código da infra mal formatado ou inválido |
+| 5. Terraform | `terraform fmt -check` e `terraform validate`, nas duas pastas de infra | Código da infra mal formatado ou inválido |
 | 6. Build | Docker Buildx | A imagem não compila |
 | 7. Imagem | **Trivy** | Encontra vulnerabilidade `CRITICAL` na imagem |
 | 8. Publicação | GHCR (tag com o SHA do commit + `latest`) | — |
 | 8b. Stack no `docker compose` | Sobe app, nginx e node-exporter, confere `/health`, o site e as métricas (401 sem token, 200 com o `METRICS_TOKEN` do GitHub Secrets) | A stack não sobe ou as métricas ficam abertas |
-| 9. Deploy automático | Deploy por *pull*: a EC2 baixa a imagem nova do GHCR; o job espera o `/health` público devolver o commit do pipeline e roda um teste de fumaça | A EC2 não atualiza em 10 minutos ou o site não responde |
+| 9. Deploy automático | Deploy por *pull*: a VM baixa a imagem nova do GHCR; o job espera o `/health` público devolver o commit do pipeline e roda um teste de fumaça | A VM não atualiza em 10 minutos ou o site não responde |
 
 As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se todas passarem, e publicação/deploy só na branch `main`.
 
 **Detalhes de segurança a mais no pipeline:** todas as GitHub Actions estão fixadas pelo **SHA do commit** (não por tag, que pode ser alterada), permissões mínimas (`contents: read`; `packages: write` só no job da imagem) e **Dependabot** semanal para dependências Python, imagem base e actions.
 
-**Segredos e configuração do pipeline**: o `METRICS_TOKEN` fica em **GitHub Secrets** (usado no job do compose e no teste de fumaça do deploy), e o `GITHUB_TOKEN` publica a imagem no GHCR. A variável `MVP_URL` (Settings → Variables) aponta o deploy para a URL pública. Não há credencial da AWS no GitHub. O token da SPTrans fica só na EC2 (`.env`, permissão 600) e o `terraform.tfvars` fica fora do Git.
+**Segredos e configuração do pipeline**: o `METRICS_TOKEN` fica em **GitHub Secrets** (usado no job do compose e no teste de fumaça do deploy), e o `GITHUB_TOKEN` publica a imagem no GHCR. A variável `MVP_URL` (Settings → Variables) aponta o deploy para a URL pública. Não há credencial de nuvem no GitHub. O token da SPTrans fica só na VM (`.env`, permissão 600) e o `terraform.tfvars` fica fora do Git.
 
 **Execução barrada e corrigida (evidência):**
 1. Na branch `prova/token-vazado`, um commit coloca um token falso da SPTrans direto no código → **Gitleaks barra** o pipeline e nada é publicado.
@@ -216,7 +230,7 @@ As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se
 
 Prometheus e Grafana rodam localmente ou no GitHub Codespaces (`monitoring/docker-compose.yml`), coletando da URL pública do MVP:
 - `/metrics` – métricas do app (FastAPI);
-- `/node-metrics` – métricas da EC2 pelo **node-exporter** (CPU, memória e disco da máquina).
+- `/node-metrics` – métricas da VM pelo **node-exporter** (CPU, memória e disco da máquina).
 
 As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca ficam expostas na internet.
 
@@ -227,26 +241,28 @@ As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca f
 | **Latência** | Tempo de resposta da API (p50 e p95) | `histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))` |
 | **Tráfego** | Requisições por segundo, por rota | `sum by (route) (rate(http_requests_total[5m]))` |
 | **Erros** | % de respostas 5xx e falhas na SPTrans | `sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))` |
-| **Saturação** | CPU e memória do app e CPU, memória e disco da EC2 | `process_resident_memory_bytes`, `1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))` |
+| **Saturação** | CPU e memória do app e CPU, memória e disco da VM | `process_resident_memory_bytes`, `1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))` |
 
 **Alertas** ([`alert.rules.yml`](monitoring/prometheus/alert.rules.yml))
 
 | Alerta | Condição | Como é demonstrado |
 |---|---|---|
-| `BusLightFora` | `up == 0` por 1 minuto | Parar o container do app e ver o alerta disparar |
-| `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Simular falha da API SPTrans |
+| `BusLightFora` | `up == 0` por 1 minuto | Desalocar a VM (`az vm deallocate`) e ver o alerta disparar |
+| `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Script `monitoring/disparar_alerta.sh`: pede a chegada ao vivo sem o token da SPTrans e gera respostas 503 |
 | `BusLightLento` | p95 acima de 1 s por 5 minutos | — |
-| `EC2Saturada` | CPU ou memória acima de 90%, ou disco acima de 85%, por 5 minutos | — |
+| `VMSaturada` | CPU ou memória acima de 90%, ou disco acima de 85%, por 5 minutos | — |
 
 ---
 
 ## 🤝 Responsabilidade compartilhada
 
-| Responsabilidade da AWS | Responsabilidade da equipe BusLight |
+O BusLight roda em uma VM, ou seja, em **IaaS**: o Azure cuida da base, e a equipe cuida de tudo que roda em cima dela.
+
+| Responsabilidade do Azure | Responsabilidade da equipe BusLight |
 |---|---|
-| Data centers, hardware e rede física | Sistema operacional da EC2 e suas atualizações |
+| Data centers, hardware e rede física | Sistema operacional da VM e suas atualizações |
 | Hipervisor e isolamento entre clientes | Docker, imagens e dependências (verificadas pelo Trivy) |
-| Disponibilidade da região e das zonas | Security Group, portas abertas e IAM |
+| Disponibilidade da região e criptografia do disco gerenciado | Regras do NSG, portas abertas e acessos |
 | Segurança física das instalações | Código da aplicação (verificado pelo Semgrep) |
 | | Segredos e credenciais (verificados pelo Gitleaks, guardados em Secrets) |
 | | Dados dos usuários e conformidade com a LGPD |
@@ -259,26 +275,28 @@ As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca f
 |---|---|---|
 | Telefone para alerta (simulado) | Camada Ouro do Databricks (`dim_usuario`) | Hash SHA-256 + versão mascarada; o app só recebe e exibe `(11) *****-1234` |
 | Localização do usuário | Usada no navegador na hora | **Não é armazenada** nem enviada para logs |
-| Logs e métricas | EC2 e Prometheus | Sem dados pessoais; só rota, status e tempo |
-| Credenciais | GitHub Secrets e `.env` da EC2 (permissão 600), fora do Git (`terraform.tfvars` e `.env` da EC2) | Nunca no código, na imagem nem no Terraform |
+| Logs e métricas | VM e Prometheus | Sem dados pessoais; só rota, status e tempo |
+| Credenciais | GitHub Secrets e `.env` da VM (permissão 600), fora do Git (`terraform.tfvars` e `.env` da VM) | Nunca no código, na imagem nem no Terraform |
 
 ---
 
 ## 💰 Estimativa de custo
 
-Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência; conferir na [AWS Pricing Calculator](https://calculator.aws/).
+Estimativa mensal para a VM ligada 24 horas por dia na região `northcentralus`. Os valores seguem a tabela pública de preços do Azure (referência de `eastus`, em dólares) e devem ser conferidos na [calculadora de preços do Azure](https://azure.microsoft.com/pricing/calculator/).
 
 | Recurso | Especificação | Custo mensal estimado |
 |---|---|---|
-| EC2 | `t3.micro` (2 vCPU, 1 GB) | ~ US$ 7,60 |
-| EBS | 20 GB gp3 (criptografado) | ~ US$ 1,60 |
-| Elastic IP / IPv4 público | 1 endereço | ~ US$ 3,65 |
-| Transferência de dados | baixo volume (até 100 GB/mês gratuitos) | ~ US$ 0,00 |
-| GitHub Actions, GHCR | repositório público | US$ 0,00 |
-| Prometheus e Grafana | locais | US$ 0,00 |
-| **Total** | | **~ US$ 13/mês** |
+| VM Linux | `Standard_B2ats_v2` (2 vCPUs, 1 GB), US$ 0,0094 por hora | ~ US$ 6,90 |
+| Disco gerenciado | Standard SSD de 30 GB | ~ US$ 2,40 |
+| IP público | 1 endereço estático (SKU Standard) | ~ US$ 3,65 |
+| Tráfego de saída | Baixo volume (os primeiros 100 GB do mês são gratuitos) | ~ US$ 0,00 |
+| GitHub Actions e GHCR | Repositório público | US$ 0,00 |
+| Prometheus e Grafana | Rodam fora da nuvem | US$ 0,00 |
+| **Total** | | **~ US$ 13 por mês** |
 
-> Neste projeto o custo é descontado do crédito do **AWS Academy Learner Lab**, e a instância só fica ligada durante as sessões do laboratório, o que reduz o valor real. Em uma conta própria, o nível gratuito da AWS cobriria a instância no primeiro ano.
+O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que dá **perto de US$ 6**. O valor sai do crédito educacional da assinatura Azure for Students, e um alerta de orçamento avisa antes de o crédito acabar. Depois da correção, `terraform destroy` apaga tudo e o custo vai a zero. Para reduzir ainda mais, dá para desalocar a VM fora do horário de uso, e o IP estático mantém o endereço.
+
+---
 
 ---
 
@@ -287,7 +305,7 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 | Critério (pontos) | Onde está |
 |---|---|
 | **Container (2,0)** – Dockerfile enxuto, não root, sem segredo, `docker compose` | [`Dockerfile`](Dockerfile), [`docker-compose.yml`](docker-compose.yml) |
-| **IaC (3,0)** – Terraform, state e `.tfvars` fora do repo, porta admin fechada | [`infra/`](infra/), [`.gitignore`](.gitignore) |
+| **IaC (3,0)** – Terraform, state e `.tfvars` fora do repo, porta admin fechada | [`infra-azure/`](infra-azure/), [`.gitignore`](.gitignore) |
 | **Pipeline (4,0)** – build, Gitleaks, Semgrep, Trivy, Secrets, deploy, execução barrada e corrigida | [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml) + prints no PDF |
 | **Observabilidade (3,0)** – 4 métricas de ouro e um alerta disparado | [`monitoring/`](monitoring/) + prints no PDF |
 | **Documentação (2,0)** – diagrama, responsabilidade compartilhada, LGPD, custo, README reproduzível | Este arquivo |
@@ -296,18 +314,20 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 
 | Extra | Por que importa |
 |---|---|
-| Testes automatizados no pipeline (13 testes: o telefone nunca sai sem máscara e o cadastro não pode ser listado trocando o id na URL — OWASP A01) | O deploy só acontece se a API funciona e respeita a LGPD |
+| Testes automatizados no pipeline (14 testes: o telefone nunca sai sem máscara e o cadastro não pode ser listado trocando o id na URL — OWASP A01) | O deploy só acontece se a API funciona e respeita a LGPD |
 | Trivy também no Terraform e no Dockerfile, com exceções justificadas | A infraestrutura passa pela mesma barreira de segurança que o código |
 | Actions fixadas por SHA, permissões mínimas e Dependabot | Protege o próprio pipeline contra ataques de cadeia de suprimentos |
-| Teste de fumaça depois do deploy | O pipeline só fica verde se o MVP responde na URL pública |
-| `terraform fmt` e `terraform validate` no pipeline | A infra é checada a cada push, igual ao código |
-| node-exporter na EC2 (pelo nginx, com token) | Saturação da máquina inteira, não só do processo do app |
+| Teste de fumaça depois do deploy, conferindo o commit que está no ar | O pipeline só fica verde se o MVP responde na URL pública com a versão certa |
+| `terraform fmt` e `terraform validate` no pipeline, para Azure e AWS | A infra é checada a cada push, igual ao código |
+| node-exporter na VM (pelo nginx, com token) | Saturação da máquina inteira, não só do processo do app |
 | Sem SSH: em vez de restringir a porta 22 a um IP, ela nem existe; o deploy é por *pull*, sem acesso de entrada | Menos superfície de ataque |
 | nginx com CSP, cabeçalhos de segurança, limite de requisições e `/metrics` protegido por token | Endurecimento da aplicação exposta na internet |
-| Container somente leitura, sem capabilities, IMDSv2 e disco criptografado | Reduz o estrago se algo for comprometido |
+| Container somente leitura, sem capabilities, VM sem identidade e disco criptografado | Reduz o estrago se algo for comprometido |
 | Dashboard do Grafana e alertas versionados como código | Monitoramento reproduzível |
 | Site acessível (contraste, teclado, leitor de tela) e offline (PWA) | Princípios "acessível de verdade" e "resiliente ao mundo real" da GS |
 | Ambiente pronto no GitHub Codespaces | Qualquer avaliador reproduz tudo no navegador |
+| Mesma infraestrutura também em AWS (`infra/`) | Mostra que o Terraform e a stack não prendem o projeto a uma nuvem |
+| Aba **Conheça-nos** no app | Quem abre o link entende o que o produto faz, para quem e por quê |
 
 ---
 
@@ -321,24 +341,26 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 │   ├── static/                    # front-end acessível (PWA, funciona offline) + Leaflet
 │   ├── data/                      # exportação JSON da camada Ouro (repositório de Dados)
 │   └── requirements.txt
-├── tests/test_app.py              # 13 testes da API (rodam no pipeline)
-├── infra/
-│   ├── versions.tf                # provider AWS e tags padrão
-│   ├── main.tf                    # VPC, subnet, IGW, Security Group, EC2 e Elastic IP
-│   ├── variables.tf
-│   ├── outputs.tf                 # URL do MVP e ID da instância
-│   ├── user_data.sh.tftpl         # instala Docker e sobe a stack na EC2
+├── tests/test_app.py              # 14 testes da API (rodam no pipeline)
+├── infra-azure/                   # produção: Terraform do Azure
+│   ├── versions.tf                # providers azurerm e tls
+│   ├── main.tf                    # resource group, rede, NSG, IP estático, NIC e VM
+│   ├── variables.tf               # região, tamanho da VM, nome DNS, token de métricas
+│   ├── outputs.tf                 # URL do MVP, IP e nome da VM
+│   ├── user_data.sh.tftpl         # instala Docker, sobe a stack e cria o timer de atualização
 │   └── terraform.tfvars.example
+├── infra/                         # alternativa: o mesmo ambiente em AWS (VPC, EC2, Elastic IP)
 ├── monitoring/
 │   ├── docker-compose.yml         # Prometheus + Grafana
 │   ├── iniciar.sh                 # gera o alvo e o token e sobe o monitoramento
+│   ├── disparar_alerta.sh         # gera respostas 503 para disparar o alerta BusLightErrosAltos
 │   ├── prometheus/                # prometheus.yml e alert.rules.yml
 │   └── grafana/                   # datasource e dashboard das 4 métricas de ouro (como código)
 ├── nginx/default.conf.template    # proxy reverso, cabeçalhos de segurança, /metrics com token
 ├── .github/
 │   ├── workflows/devsecops.yml    # pipeline DevSecOps
 │   └── dependabot.yml
-├── .devcontainer/                 # ambiente do GitHub Codespaces (Docker, Terraform, AWS CLI)
+├── .devcontainer/                 # ambiente do GitHub Codespaces (Docker, Terraform, Azure CLI, AWS CLI)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .dockerignore · .gitignore · .trivyignore · .semgrepignore · .env.example
@@ -349,10 +371,10 @@ Estimativa mensal (região `us-east-1`, uso 24h por dia). Valores de referência
 
 ## ▶️ Como reproduzir
 
-Todo o fluxo funciona no navegador pelo **GitHub Codespaces** (**Code → Codespaces → Create codespace**): o ambiente já vem com Docker, Terraform e AWS CLI pela configuração em [`.devcontainer/`](.devcontainer/). Também funciona em qualquer máquina com Docker, Terraform 1.6+ e AWS CLI.
+Todo o fluxo funciona no navegador pelo **GitHub Codespaces** (**Code → Codespaces → Create codespace**) ou em qualquer máquina com Docker, Terraform 1.6+ e Azure CLI.
 
 ### Pré-requisitos
-- Uma conta **AWS** (pessoal, ou o **AWS Academy Learner Lab**)
+- Uma assinatura do **Azure** (por exemplo, **Azure for Students**)
 - Token gratuito da [API Olho Vivo da SPTrans](https://www.sptrans.com.br/desenvolvedores/)
 
 ### 1. Rodar localmente
@@ -364,30 +386,36 @@ pytest                      # testes da API
 Acesse `http://localhost:8080` (no Codespaces, pela aba **Ports**).
 
 ### 2. Criar a infraestrutura
-No Learner Lab, clique em **Start Lab** e, em **AWS Details**, copie as credenciais para as variáveis de ambiente do terminal (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`).
 ```bash
-cd infra
+az login
+cd infra-azure
+cp terraform.tfvars.example terraform.tfvars   # preencha subscription_id e metrics_token
 terraform init
 terraform plan
 terraform apply
 ```
-O `output` mostra a URL pública do MVP e o ID da instância.
+O `output` mostra a URL pública do MVP. Se o Azure recusar a região ou o tamanho da VM, escolha uma região permitida pela política da assinatura e um tamanho liberado (`az vm list-skus -l <regiao> --size Standard_B --resource-type virtualMachines`). Se o provedor reclamar de "subnet not found", rode `terraform apply` de novo.
 
 ### 3. Publicar pelo pipeline
-1. Em **Settings → Secrets and variables → Actions**, cadastre o Secret `METRICS_TOKEN` (o mesmo do `terraform.tfvars`) e a Variable `MVP_URL` (a `url_mvp` do Terraform). Não há credencial da AWS no GitHub.
-2. Faça um `git push` na branch `main`: o pipeline roda as verificações, publica a imagem e faz o deploy.
-3. Na primeira publicação, deixe o pacote da imagem público em **Packages → gs_securedevopstools-cloudcomputing_buslight → Package settings → Change visibility**, para a EC2 conseguir baixá-la.
+1. Em **Settings → Secrets and variables → Actions**, cadastre o Secret `METRICS_TOKEN` (o mesmo do `terraform.tfvars`) e a Variable `MVP_URL` (a `url_mvp` do Terraform). Não há credencial de nuvem no GitHub.
+2. Faça um `git push` na branch `main`: o pipeline roda as verificações, publica a imagem e espera a VM atualizar.
+3. Na primeira publicação, deixe o pacote da imagem público em **Packages → gs_securedevopstools-cloudcomputing_buslight → Package settings → Change visibility**, para a VM conseguir baixá-la.
 
 ### 4. Monitorar
 ```bash
 cd monitoring
-MVP_HOST=<ip-do-output> METRICS_TOKEN=<mesmo-token-do-secret> ./iniciar.sh
+MVP_HOST=buslight-gs.northcentralus.cloudapp.azure.com METRICS_TOKEN=<mesmo-token-do-secret> ./iniciar.sh
 ```
 Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://localhost:3000` (usuário `admin`, senha gerada no `monitoring/.env`), dashboard **BusLight – 4 métricas de ouro**.
 
 **Para disparar os alertas:**
-- `BusLightFora`: parar a EC2 (`aws ec2 stop-instances --instance-ids <id>`), esperar 1 minuto e ligar de novo (`start-instances`). O Elastic IP mantém a URL.
-- `BusLightErrosAltos`: consultar a chegada ao vivo com a SPTrans indisponível (por exemplo, sem `SPTRANS_TOKEN`), gerando respostas `503`.
+- `BusLightErrosAltos`: `MVP_URL=http://buslight-gs.northcentralus.cloudapp.azure.com ./disparar_alerta.sh`, que gera respostas `503` por 4 minutos sem derrubar o site.
+- `BusLightFora`: `az vm deallocate -g rg-buslight -n vm-buslight`, esperar 1 minuto e religar com `az vm start`. O IP estático mantém a URL.
+
+### 5. Encerrar
+```bash
+cd infra-azure && terraform destroy
+```
 
 ---
 
@@ -395,6 +423,6 @@ Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://loca
 
 | Item | Link |
 |---|---|
-| MVP (URL pública) | [http://34.237.158.254](http://34.237.158.254) |
+| MVP (URL pública) | [http://buslight-gs.northcentralus.cloudapp.azure.com](http://buslight-gs.northcentralus.cloudapp.azure.com) |
 | Repositório de Dados | [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
-| Relatório PDF | [preencher] |
+| Relatório PDF | Enviado no Teams da disciplina, com o link deste repositório |

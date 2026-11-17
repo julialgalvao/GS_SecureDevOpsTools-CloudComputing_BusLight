@@ -1,6 +1,6 @@
 # BusLight - stack do MVP (app + nginx)
 # Local:  docker compose up --build        -> http://localhost:8080 (HTTP_PORT=8080 no .env)
-# Na EC2: o deploy usa a imagem publicada no GHCR (variável IMAGE) e a porta 80.
+# Na VM: o deploy usa a imagem publicada no GHCR (variável IMAGE) e a porta 80.
 
 services:
   app:
@@ -19,7 +19,7 @@ services:
     expose:
       - "8000"
 
-  # métricas da máquina (CPU, memória e disco da EC2) - saturação de verdade, não só do processo
+  # métricas da máquina (CPU, memória e disco da VM) - saturação de verdade, não só do processo
   node-exporter:
     image: prom/node-exporter:v1.12.1
     command:

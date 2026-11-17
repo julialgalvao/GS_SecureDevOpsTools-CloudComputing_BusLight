@@ -4,11 +4,11 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-: "${MVP_HOST:?informe MVP_HOST (ex: 54.10.20.30)}"
-: "${METRICS_TOKEN:?informe METRICS_TOKEN (o mesmo do .env da EC2)}"
+: "${MVP_HOST:?informe MVP_HOST (ex: buslight-gs.northcentralus.cloudapp.azure.com)}"
+: "${METRICS_TOKEN:?informe METRICS_TOKEN (o mesmo do .env da VM)}"
 
 mkdir -p prometheus/targets
-printf '[{"targets": ["%s"], "labels": {"ambiente": "aws"}}]\n' "$MVP_HOST" > prometheus/targets/buslight.json
+printf '[{"targets": ["%s"], "labels": {"ambiente": "azure"}}]\n' "$MVP_HOST" > prometheus/targets/buslight.json
 printf '%s' "$METRICS_TOKEN" > prometheus/metrics_token
 chmod 644 prometheus/metrics_token
 

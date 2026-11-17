@@ -160,11 +160,11 @@ jobs:
         if: always()
         run: docker compose down -v
 
-  # 7. deploy automático. A EC2 não tem porta de administração (nem SSH), então o deploy é "pull":
+  # 7. deploy automático. A VM não tem porta de administração (nem SSH), então o deploy é "pull":
   # o pipeline publica a imagem e a própria máquina (timer buslight-atualiza) baixa a versão nova.
   # O job só termina verde quando o /health da URL pública devolve o commit deste pipeline.
   deploy:
-    name: Deploy na AWS
+    name: Deploy na nuvem
     needs: [imagem, compose]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -178,7 +178,7 @@ jobs:
         if: env.MVP_URL == ''
         run: echo "::notice::Variável MVP_URL não configurada, deploy pulado."
 
-      - name: Esperar a EC2 rodar a versão nova
+      - name: Esperar a VM rodar a versão nova
         if: env.MVP_URL != ''
         run: |
           for i in $(seq 1 40); do
@@ -190,7 +190,7 @@ jobs:
             fi
             sleep 15
           done
-          echo "::error::A EC2 não atualizou para ${GITHUB_SHA::7} em 10 minutos"
+          echo "::error::A VM não atualizou para ${GITHUB_SHA::7} em 10 minutos"
           exit 1
 
       - name: Teste de fumaça
