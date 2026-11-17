@@ -151,10 +151,10 @@ jobs:
       - name: Site e métricas respondem
         run: |
           curl -fsS http://127.0.0.1:8080/health
-          curl -fsS http://127.0.0.1:8080/ | grep -q BusLight
+          curl -fsS http://127.0.0.1:8080/ | grep -c BusLight > /dev/null
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/metrics)" = "401"
-          curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:8080/metrics | grep -q http_
-          curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:8080/node-metrics | grep -q node_cpu
+          curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:8080/metrics | grep -c http_ > /dev/null
+          curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" http://127.0.0.1:8080/node-metrics | grep -c node_cpu > /dev/null
 
       - name: Derrubar
         if: always()
@@ -197,9 +197,9 @@ jobs:
         if: env.MVP_URL != ''
         run: |
           curl -fsS "$MVP_URL/api/resumo" > /dev/null
-          curl -fsS "$MVP_URL/" | grep -q BusLight
+          curl -fsS "$MVP_URL/" | grep -c BusLight > /dev/null
           # as métricas só abrem com o token (GitHub Secret); sem ele a resposta é 401
           test "$(curl -s -o /dev/null -w '%{http_code}' "$MVP_URL/metrics")" = "401"
           if [ -n "$METRICS_TOKEN" ]; then
-            curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" "$MVP_URL/metrics" | grep -q http_
+            curl -fsS -H "Authorization: Bearer $METRICS_TOKEN" "$MVP_URL/metrics" | grep -c http_ > /dev/null
           fi
