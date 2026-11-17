@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-label="Telas do BusLight: mapa dos pontos coloridos pela espera e o aviso de a que horas sair de casa">
+<defs>
+<linearGradient id="fundo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF8DB"/><stop offset="1" stop-color="#FDE8E8"/></linearGradient>
+</defs>
+<rect width="640" height="440" rx="28" fill="url(#fundo)" stroke="#E1E7F0" stroke-width="2"/>
+
+<g transform="translate(120 40) rotate(-6 100 180)">
+  <rect width="200" height="340" rx="28" fill="#0E1F3D"/>
+  <rect x="10" y="30" width="180" height="290" rx="16" fill="#F4F7FB"/>
+  <rect x="10" y="30" width="180" height="46" rx="16" fill="#1F3A5F"/><rect x="10" y="60" width="180" height="16" fill="#1F3A5F"/>
+  <text x="100" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="16" font-weight="700" fill="#FFFFFF">BusLight</text>
+  <rect x="20" y="88" width="160" height="120" rx="12" fill="#CFE3D4"/>
+  <path d="M30 190 C70 150 90 170 130 120 S170 110 172 98" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="52" cy="170" r="7" fill="#1E7B3A"/><circle cx="82" cy="158" r="7" fill="#1E7B3A"/><circle cx="108" cy="140" r="7" fill="#B85C00"/><circle cx="132" cy="118" r="7" fill="#B85C00"/><circle cx="158" cy="108" r="8" fill="#B3261E"/>
+  <rect x="20" y="218" width="160" height="40" rx="10" fill="#FFFFFF"/><rect x="28" y="228" width="70" height="8" rx="4" fill="#1F3A5F"/><rect x="28" y="242" width="44" height="6" rx="3" fill="#E1E7F0"/><rect x="132" y="230" width="40" height="18" rx="9" fill="#FBDAD7"/>
+  <rect x="20" y="266" width="160" height="40" rx="10" fill="#FFFFFF"/><rect x="28" y="276" width="86" height="8" rx="4" fill="#1F3A5F"/><rect x="28" y="290" width="52" height="6" rx="3" fill="#E1E7F0"/><rect x="132" y="278" width="40" height="18" rx="9" fill="#DDF3E4"/>
+</g>
+
+<g transform="translate(330 100) rotate(5 100 160)">
+  <rect width="200" height="320" rx="28" fill="#0E1F3D"/>
+  <rect x="10" y="30" width="180" height="270" rx="16" fill="#F4F7FB"/>
+  <rect x="10" y="30" width="180" height="46" rx="16" fill="#1F3A5F"/><rect x="10" y="60" width="180" height="16" fill="#1F3A5F"/>
+  <text x="100" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="14" font-weight="700" fill="#FFD43B">Saia de casa às...</text>
+  <rect x="20" y="90" width="160" height="92" rx="12" fill="#EAF6F6"/><rect x="20" y="90" width="6" height="92" rx="3" fill="#0F8B8D"/>
+  <text x="38" y="120" font-family="system-ui, sans-serif" font-size="16" font-weight="800" fill="#1F3A5F">Saia 7 min antes</text>
+  <rect x="38" y="132" width="132" height="6" rx="3" fill="#C9D7EA"/><rect x="38" y="146" width="104" height="6" rx="3" fill="#C9D7EA"/><rect x="38" y="160" width="76" height="6" rx="3" fill="#C9D7EA"/>
+  <rect x="20" y="194" width="160" height="30" rx="8" fill="#FFFFFF"/><text x="30" y="214" font-family="system-ui, sans-serif" font-size="11" fill="#14213D">7282-10</text><rect x="116" y="200" width="54" height="18" rx="9" fill="#FBDAD7"/><text x="143" y="213" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#B3261E">47 min</text>
+  <rect x="20" y="230" width="160" height="30" rx="8" fill="#FFFFFF"/><text x="30" y="250" font-family="system-ui, sans-serif" font-size="11" fill="#14213D">8700-10</text><rect x="116" y="236" width="54" height="18" rx="9" fill="#FFE9CC"/><text x="143" y="249" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#B85C00">22 min</text>
+  <rect x="62" y="268" width="76" height="24" rx="12" fill="#E8505B"/><text x="100" y="285" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">Calcular</text>
+</g>
+</svg>

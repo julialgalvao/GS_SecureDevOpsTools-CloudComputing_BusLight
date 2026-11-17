@@ -178,13 +178,13 @@ def alerta(id_usuario: str):
 
 @app.get("/", include_in_schema=False)
 def inicio():
-    return FileResponse(PASTA / "static" / "index.html")
+    return FileResponse(PASTA / "static" / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/sw.js", include_in_schema=False)
 def service_worker():
     # servido na raiz para o service worker cobrir o site inteiro
-    return FileResponse(PASTA / "static" / "sw.js", media_type="application/javascript")
+    return FileResponse(PASTA / "static" / "sw.js", media_type="application/javascript", headers={"Cache-Control": "no-cache"})
 
 
 app.mount("/static", StaticFiles(directory=PASTA / "static"), name="static")

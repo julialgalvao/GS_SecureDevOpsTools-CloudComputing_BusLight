@@ -9,7 +9,7 @@
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="/static/style.css?v=4">
+  <link rel="stylesheet" href="/static/style.css?v=5">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -139,38 +139,47 @@
         <div class="sobre-numero n4"><span id="sobre-coletas" class="valor">–</span><span class="rotulo">coletas de dados reais</span></div>
       </div>
 
-      <h3 class="sobre-titulo">Do problema à solução</h3>
-      <div class="duo">
-        <article class="bloco bloco-problema">
-          <span class="bloco-icone" aria-hidden="true">😟</span>
-          <h4>O problema</h4>
-          <p>Na periferia, o ônibus demora e ninguém sabe quando vem. À noite a frota diminui e a pessoa espera em ponto escuro, sem saber se o ônibus já passou.</p>
-        </article>
-        <article class="bloco bloco-solucao">
-          <span class="bloco-icone" aria-hidden="true">💡</span>
-          <h4>A solução</h4>
-          <p>Dados reais da SPTrans viram um aviso simples: quanto se espera em cada ponto e a que horas sair de casa para esperar o mínimo.</p>
-        </article>
+      <div class="faixa">
+        <figure class="faixa-img"><img src="/static/sobre-ponto.svg" alt="Pessoa esperando no ponto de ônibus à noite, sob um poste de luz" width="640" height="440" loading="lazy"></figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-coral">O problema</p>
+          <h3>Esperar sem saber, no escuro</h3>
+          <p>Na periferia, o ônibus demora e ninguém sabe quando vem. À noite a frota diminui, e a pessoa fica em um ponto escuro sem saber se o ônibus já passou.</p>
+          <ul class="marcas">
+            <li>Intervalos longos e imprevisíveis</li>
+            <li>Menos ônibus depois das 22h</li>
+            <li>Mais tempo exposto no ponto</li>
+          </ul>
+        </div>
       </div>
 
-      <h3 class="sobre-titulo">Como funciona</h3>
-      <ol class="passos">
-        <li class="passo p1">
-          <span class="passo-num" aria-hidden="true">1</span>
-          <h4>Coletamos</h4>
-          <p>4 vezes por dia, um robô busca a posição e a previsão dos ônibus (SPTrans), o clima (Open-Meteo) e os dados dos bairros (IBGE).</p>
-        </li>
-        <li class="passo p2">
-          <span class="passo-num" aria-hidden="true">2</span>
-          <h4>Tratamos</h4>
-          <p>Os dados passam por três camadas, de bruto a pronto, e as regras de qualidade descartam registros com erro de GPS.</p>
-        </li>
-        <li class="passo p3">
-          <span class="passo-num" aria-hidden="true">3</span>
-          <h4>Mostramos</h4>
-          <p>O app transforma tudo em mapa, ranking de linhas e o horário ideal para sair de casa. Funciona no celular, mesmo com internet ruim.</p>
-        </li>
-      </ol>
+      <div class="faixa inversa">
+        <figure class="faixa-img"><img src="/static/sobre-dados.svg" alt="Fluxo dos dados: coleta da SPTrans, tratamento em camadas bronze, prata e ouro, e exibição no app" width="640" height="440" loading="lazy"></figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-turquesa">A solução</p>
+          <h3>Dados reais viram um aviso simples</h3>
+          <p>Um robô coleta a previsão dos ônibus da SPTrans, o clima e os dados dos bairros. Os dados passam por três camadas de tratamento e chegam ao app como mapa, ranking e a hora de sair de casa.</p>
+          <ol class="passos-curtos">
+            <li><strong>Coletamos</strong> 4 vezes por dia, em 144 pontos.</li>
+            <li><strong>Tratamos</strong> em Bronze, Prata e Ouro, com 5 regras de qualidade.</li>
+            <li><strong>Mostramos</strong> no celular, mesmo com internet ruim.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faixa">
+        <figure class="faixa-img"><img src="/static/sobre-app.svg" alt="Duas telas do BusLight: o mapa dos pontos e o aviso de a que horas sair de casa" width="640" height="440" loading="lazy"></figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-amarela">No seu bolso</p>
+          <h3>Saiba a hora de sair de casa</h3>
+          <p>Escolha o ponto, o horário e quantos minutos leva a caminhada. O BusLight diz quanto você espera sem aviso e quantos minutos o aviso evita, para você sair na hora certa e esperar o mínimo.</p>
+          <ul class="marcas">
+            <li>Mapa colorido pela espera média</li>
+            <li>Ranking das linhas que mais atrasam</li>
+            <li>Alerta para o seu ponto favorito</li>
+          </ul>
+        </div>
+      </div>
 
       <h3 class="sobre-titulo">O que você encontra no app</h3>
       <div class="recursos">
@@ -225,6 +234,6 @@
   </footer>
 
   <script src="/static/vendor/leaflet/leaflet.js"></script>
-  <script src="/static/app.js?v=3"></script>
+  <script src="/static/app.js?v=4"></script>
 </body>
 </html>

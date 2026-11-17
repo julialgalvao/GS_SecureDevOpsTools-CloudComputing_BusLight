@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-label="Do ônibus à nuvem e ao celular: os dados da SPTrans são coletados, tratados em camadas e mostrados no app">
+<defs>
+<linearGradient id="fundo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAF6F6"/><stop offset="1" stop-color="#F3F7FD"/></linearGradient>
+<marker id="seta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker>
+</defs>
+<rect width="640" height="440" rx="28" fill="url(#fundo)" stroke="#E1E7F0" stroke-width="2"/>
+
+<g transform="translate(70 130)">
+  <rect width="130" height="150" rx="20" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="3"/>
+  <rect x="22" y="34" width="86" height="46" rx="10" fill="#1F3A5F"/>
+  <rect x="30" y="42" width="20" height="18" rx="3" fill="#FFD43B"/><rect x="55" y="42" width="20" height="18" rx="3" fill="#FFD43B"/><rect x="80" y="42" width="20" height="18" rx="3" fill="#FFD43B"/>
+  <circle cx="42" cy="88" r="8" fill="#0E1F3D"/><circle cx="88" cy="88" r="8" fill="#0E1F3D"/>
+  <text x="65" y="128" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1F3A5F">SPTrans</text>
+</g>
+<text x="135" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#0F8B8D">1. Coletamos</text>
+
+<g transform="translate(255 110)">
+  <ellipse cx="65" cy="30" rx="60" ry="18" fill="#B87333"/><rect x="5" y="30" width="120" height="30" fill="#B87333"/><ellipse cx="65" cy="60" rx="60" ry="18" fill="#B87333"/>
+  <ellipse cx="65" cy="76" rx="60" ry="18" fill="#9AA6B8"/><rect x="5" y="76" width="120" height="30" fill="#9AA6B8"/><ellipse cx="65" cy="106" rx="60" ry="18" fill="#9AA6B8"/>
+  <ellipse cx="65" cy="122" rx="60" ry="18" fill="#FFD43B"/><rect x="5" y="122" width="120" height="30" fill="#FFD43B"/><ellipse cx="65" cy="152" rx="60" ry="18" fill="#FFD43B"/>
+  <text x="65" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Bronze</text>
+  <text x="65" y="102" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0E1F3D">Prata</text>
+  <text x="65" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0E1F3D">Ouro</text>
+</g>
+<text x="320" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#0F8B8D">2. Tratamos</text>
+
+<g transform="translate(450 100)">
+  <rect width="120" height="200" rx="22" fill="#0E1F3D"/>
+  <rect x="9" y="22" width="102" height="156" rx="12" fill="#FFFFFF"/>
+  <rect x="14" y="28" width="92" height="64" rx="8" fill="#CFE3D4"/>
+  <circle cx="40" cy="50" r="6" fill="#1E7B3A"/><circle cx="62" cy="64" r="6" fill="#B85C00"/><circle cx="84" cy="48" r="6" fill="#B3261E"/><circle cx="52" cy="76" r="5" fill="#1E7B3A"/><circle cx="90" cy="72" r="5" fill="#B85C00"/>
+  <rect x="14" y="100" width="92" height="30" rx="8" fill="#EAF6F6"/><rect x="14" y="100" width="5" height="30" rx="2" fill="#0F8B8D"/>
+  <text x="62" y="119" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" font-weight="700" fill="#1F3A5F">Saia 7 min antes</text>
+  <rect x="14" y="138" width="92" height="12" rx="6" fill="#E8505B"/>
+  <rect x="14" y="156" width="60" height="8" rx="4" fill="#E1E7F0"/>
+</g>
+<text x="510" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#0F8B8D">3. Mostramos</text>
+
+<path d="M205 205 H245" stroke="#1F3A5F" stroke-width="3.5" stroke-dasharray="7 6" marker-end="url(#seta)" fill="none"/>
+<path d="M395 205 H440" stroke="#1F3A5F" stroke-width="3.5" stroke-dasharray="7 6" marker-end="url(#seta)" fill="none"/>
+<text x="320" y="385" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#5B6780">4 coletas por dia · 5 regras de qualidade · modelo dimensional</text>
+</svg>
