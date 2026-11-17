@@ -52,6 +52,13 @@ function configurarAbas() {
     aba.focus();
     if (aba.id === "aba-mapa" && mapa) mapa.invalidateSize();
   }
+  // botões da aba Conheça-nos que levam para outra aba
+  document.querySelectorAll(".ir-aba").forEach((b) => {
+    b.addEventListener("click", () => {
+      ativar(document.getElementById(b.dataset.aba));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
   abas.forEach((aba, i) => {
     aba.addEventListener("click", () => ativar(aba));
     aba.addEventListener("keydown", (ev) => {
@@ -83,6 +90,10 @@ async function carregarResumo() {
   document.getElementById("n-espera").textContent = dados.espera_media_min;
   document.getElementById("n-noite").textContent = dados.espera_media_noite_min ?? "–";
   document.getElementById("n-coletas").textContent = dados.coletas ?? "–";
+  document.getElementById("sobre-pontos").textContent = dados.pontos;
+  document.getElementById("sobre-espera").textContent = dados.espera_media_min;
+  document.getElementById("sobre-noite").textContent = dados.espera_media_noite_min ?? "–";
+  document.getElementById("sobre-coletas").textContent = dados.coletas ?? "–";
 }
 
 // ---------------------------------------------------------------- mapa

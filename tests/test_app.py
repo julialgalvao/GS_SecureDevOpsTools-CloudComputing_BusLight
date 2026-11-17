@@ -18,6 +18,14 @@ def test_health():
     resp = cliente.get("/health")
     assert resp.status_code == 200
     assert resp.json()["status"] == "ok"
+    assert "versao" in resp.json()
+
+
+def test_aba_conheca_nos_existe():
+    html = cliente.get("/").text
+    assert 'id="aba-sobre"' in html
+    assert 'id="painel-sobre"' in html
+    assert "ODS" in html or "Objetivos de Desenvolvimento" in html
 
 
 def test_site_abre():

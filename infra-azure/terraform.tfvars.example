@@ -1,0 +1,7 @@
+# Copie para terraform.tfvars e preencha. O terraform.tfvars não vai para o Git.
+subscription_id = "00000000-0000-0000-0000-000000000000" # Subscriptions -> Azure for Students -> ID
+regiao          = "northcentralus"
+tamanho_vm      = "Standard_B2ats_v2"
+dns_label       = "buslight-gs"
+# metrics_token = "gere com: openssl rand -hex 24"
+# sptrans_token = "token da API Olho Vivo (opcional; liga a Chegada ao vivo)"

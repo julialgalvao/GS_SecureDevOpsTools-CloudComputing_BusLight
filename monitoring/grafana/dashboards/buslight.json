@@ -382,7 +382,7 @@
     {
       "id": 10,
       "type": "timeseries",
-      "title": "4b. Saturação da EC2 (node-exporter)",
+      "title": "4b. Saturação da VM (node-exporter)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -409,7 +409,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "1 - avg(rate(node_cpu_seconds_total{job=\"ec2\",mode=\"idle\"}[5m]))",
+          "expr": "1 - avg(rate(node_cpu_seconds_total{job=\"vm\",mode=\"idle\"}[5m]))",
           "legendFormat": "CPU"
         },
         {
@@ -418,7 +418,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "1 - node_memory_MemAvailable_bytes{job=\"ec2\"} / node_memory_MemTotal_bytes{job=\"ec2\"}",
+          "expr": "1 - node_memory_MemAvailable_bytes{job=\"vm\"} / node_memory_MemTotal_bytes{job=\"vm\"}",
           "legendFormat": "Memória"
         },
         {
@@ -427,7 +427,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "1 - node_filesystem_avail_bytes{job=\"ec2\",mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"ec2\",mountpoint=\"/\"}",
+          "expr": "1 - node_filesystem_avail_bytes{job=\"vm\",mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"vm\",mountpoint=\"/\"}",
           "legendFormat": "Disco"
         }
       ]

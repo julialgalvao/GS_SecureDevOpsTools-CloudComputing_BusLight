@@ -16,8 +16,8 @@ scrape_configs:
       - files:
           - /etc/prometheus/targets/*.json
 
-  # node-exporter da EC2, exposto pelo nginx em /node-metrics
-  - job_name: ec2
+  # node-exporter da VM, exposto pelo nginx em /node-metrics
+  - job_name: vm
     metrics_path: /node-metrics
     scheme: http
     authorization:
