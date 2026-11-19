@@ -57,8 +57,8 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Linhas** | Ranking das linhas com mais atraso | Ouro: `vw_mvp_ranking_linhas` |
 | **Saia de casa às...** | Horário recomendado para sair e esperar o mínimo | Ouro: `vw_mvp_saia_de_casa` |
 | **Meus alertas** | Ponto favorito e telefone **mascarado** | Ouro: `dim_usuario` |
-| **Conheça-nos** | O que o app faz e o que cada disciplina construiu: visão computacional (resultados e vídeo de teste), automação com robô físico, dados e nuvem, ODS, perguntas frequentes e equipe. Tem um **assistente** na lateral, que responde com os dados do app (sem modelo de IA) | Conteúdo do app + material da equipe (automação: [linesiscl/GS-BusLight](https://github.com/linesiscl/GS-BusLight)) |
-| **Integração nas outras abas** | Mapa: nota sobre a lotação por visão. Chegada ao vivo: quantos ônibus são acessíveis. Meus alertas: simulação do robô, com a luz verde, amarela ou vermelha conforme a espera | Dados do próprio app |
+| **Conheça-nos** | O que o app faz e o que cada disciplina construiu: visão computacional (detecção e rastreio de pessoas e ônibus no ponto), automação de alertas, robô físico, dados e nuvem, ODS, perguntas frequentes e equipe. Tem um **assistente** na lateral, que responde com os dados do app | Conteúdo do app + material da equipe (automação: [linesiscl/GS-BusLight](https://github.com/linesiscl/GS-BusLight)) |
+| **Integração nas outras abas** | Chegada ao vivo: quantos ônibus são acessíveis. Meus alertas: simulação do robô, com a luz verde, amarela ou vermelha conforme a espera | Dados do próprio app |
 
 ---
 
