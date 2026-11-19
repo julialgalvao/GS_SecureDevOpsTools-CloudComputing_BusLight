@@ -286,7 +286,7 @@ function simularRobo(minutos) {
   texto.append(
     el("p", "Simulação do robô de alertas", "robo-titulo"),
     el("p", frase),
-    el("p", "É uma simulação com os dados do app. O robô físico lê os alertas gerados pela automação da equipe.", "robo-nota"),
+    el("p", "É uma simulação com os dados do app. O robô físico, entrega de Maker, vai ler os alertas gerados pela automação da equipe.", "robo-nota"),
   );
   caixa.append(luz, texto);
   return caixa;
@@ -385,7 +385,7 @@ async function responder(id) {
   }
   const fixas = {
     espera: "É o tempo, em minutos, entre a chegada de um ônibus de uma linha e o próximo, no ponto e no horário escolhidos, calculado com as coletas que fizemos.",
-    robo: "Uma automação compara a espera prevista com o limite de cada linha (espera normal mais um excedente) e registra um alerta. O robô físico lê os alertas e sinaliza com luzes e movimentos. Veja a simulação na aba Meus alertas.",
+    robo: "Uma automação compara a espera prevista com o limite de cada linha (espera normal mais um excedente) e registra um alerta. O robô físico (entrega de Maker) vai ler os alertas e sinalizar com luzes e movimentos. Ainda não há demonstração dele aqui, mas a aba Meus alertas tem uma simulação.",
     visao: "Um modelo (YOLO11n) foi treinado para reconhecer pessoas, ônibus, cadeiras de rodas, muletas e bengalas em imagens de pontos de ônibus, para estimar a lotação e apoiar a acessibilidade. Os resultados estão nesta página.",
     local: "Não. A localização, quando usada, serve só naquele momento e não é gravada. O telefone do alerta é guardado protegido e aparece mascarado.",
   };
