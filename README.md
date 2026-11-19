@@ -57,7 +57,8 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Linhas** | Ranking das linhas com mais atraso | Ouro: `vw_mvp_ranking_linhas` |
 | **Saia de casa às...** | Horário recomendado para sair e esperar o mínimo | Ouro: `vw_mvp_saia_de_casa` |
 | **Meus alertas** | Ponto favorito e telefone **mascarado** | Ouro: `dim_usuario` |
-| **Conheça-nos** | O que o app faz, como funciona, diferencial, público atendido, ODS e equipe | Conteúdo do app + números do resumo |
+| **Conheça-nos** | O que o app faz e o que cada disciplina construiu: visão computacional (resultados e vídeo de teste), automação com robô físico, dados e nuvem, ODS, perguntas frequentes e equipe. Tem um **assistente** na lateral, que responde com os dados do app (sem modelo de IA) | Conteúdo do app + material da equipe (automação: [linesiscl/GS-BusLight](https://github.com/linesiscl/GS-BusLight)) |
+| **Integração nas outras abas** | Mapa: nota sobre a lotação por visão. Chegada ao vivo: quantos ônibus são acessíveis. Meus alertas: simulação do robô, com a luz verde, amarela ou vermelha conforme a espera | Dados do próprio app |
 
 ---
 
@@ -69,9 +70,9 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | Cidadão e território | Trabalhador da periferia da zona sul de São Paulo (Parelheiros, Grajaú, Capão Redondo, Campo Limpo) que depende de ônibus, principalmente quem sai cedo ou volta tarde; com atenção a mulheres, idosos e pessoas com deficiência |
 | Problema, em uma frase | O passageiro espera tempo demais no ponto, sem saber quando o ônibus chega, muitas vezes à noite e em lugar inseguro |
 | Proposta de valor | Saber quando o ônibus chega e a hora certa de sair de casa, para esperar o mínimo possível no ponto |
-| Arquitetura: componentes | App web + API (este repositório) · Pipeline de dados (repositório de Dados). Demais componentes da GS, entregues nas outras disciplinas da equipe: assistente de IA generativa, visão computacional no ponto, robô de alertas (RPA) e totem físico com sensores (Maker) |
+| Arquitetura: componentes | App web + API (este repositório) · Pipeline de dados (repositório de Dados). Demais componentes da GS, entregues nas outras disciplinas da equipe: visão computacional no ponto e automação de alertas com robô físico (RPA). O assistente de IA generativa é uma proposta de evolução |
 | Fontes de dados | SPTrans Olho Vivo, Open-Meteo, IBGE e cadastro de usuários simulado |
-| Modelos de IA utilizados | Nas disciplinas de IA e Visão (entrega à parte): LLM local com RAG e agente (assistente do passageiro) · YOLO customizado (lotação do ponto) |
+| Modelos de IA utilizados | Visão computacional: YOLO11n treinado para pessoas, ônibus e recursos de acessibilidade. Proposta de evolução: assistente do passageiro com LLM e RAG |
 | URL do MVP e repositórios | MVP: [http://buslight-gs.northcentralus.cloudapp.azure.com](http://buslight-gs.northcentralus.cloudapp.azure.com) · Cloud: [este repositório](https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight) · Dados: [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
 | Indicadores de impacto | Minutos de espera evitados, pontos críticos identificados, usuários noturnos atendidos |
 | ODS conectados | 11, 10 e 9 |
