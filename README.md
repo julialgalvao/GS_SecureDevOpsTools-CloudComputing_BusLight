@@ -58,6 +58,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | **Saia de casa às...** | Horário recomendado para sair e esperar o mínimo | Ouro: `vw_mvp_saia_de_casa` |
 | **Meus alertas** | Ponto favorito e telefone **mascarado** | Ouro: `dim_usuario` |
 | **Conheça-nos** | O que o app faz, como funciona, diferencial, público atendido, ODS e equipe | Conteúdo do app + números do resumo |
+| **Projeto completo** | O que a visão computacional, a automação com o robô físico, os dados e a nuvem entregam, com as imagens e o vídeo de teste da equipe | Material das disciplinas da equipe (repositório da automação: [linesiscl/GS-BusLight](https://github.com/linesiscl/GS-BusLight)) |
 
 ---
 

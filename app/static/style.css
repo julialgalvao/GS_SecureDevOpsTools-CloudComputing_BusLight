@@ -324,3 +324,18 @@ tbody tr:hover { background: #F9FBFE; }
 .pessoa .icone { flex: none; }
 .pessoa h4 { margin: .1rem 0 .25rem !important; }
 .pessoa p { color: var(--suave); font-size: .97rem; }
+
+/* ---------- aba Projeto completo ---------- */
+.faixa-img figcaption { margin-top: .5rem; font-size: .9rem; color: var(--suave); text-align: center; }
+.faixa-img video { display: block; width: 100%; height: auto; border-radius: 1.5rem; box-shadow: var(--sombra); background: #0E1F3D; }
+.mini { display: block; width: 100%; max-width: 360px; height: auto; margin-top: .9rem; border-radius: 1rem; box-shadow: var(--sombra); }
+.link-externo { display: inline-block; margin-top: .4rem; padding: .35rem 1rem; border-radius: 999px; border: 2px solid var(--azul); color: var(--azul); font-weight: 600; text-decoration: none; }
+.link-externo:hover { background: var(--azul); color: #FFFFFF; }
+.icone.c7 { background: #1E7B3A; }
+.conexoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.conexao { padding: 1.15rem; border-radius: 1.1rem; border: 1px solid var(--linha); border-left: 6px solid var(--azul); background: var(--cartao); }
+.conexao p { color: var(--suave); font-size: .97rem; }
+.conexao.ja { border-left-color: var(--verde); }
+.conexao.mesma { border-left-color: var(--turquesa); }
+.conexao.prox { border-left-color: var(--laranja); border-style: dashed; border-left-style: solid; }
+.conexao-etiqueta { display: inline-block; padding: .1rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--fundo); color: var(--azul); }

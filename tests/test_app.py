@@ -26,6 +26,9 @@ def test_aba_conheca_nos_existe():
     assert 'id="aba-sobre"' in html
     assert 'id="painel-sobre"' in html
     assert "ODS" in html or "Objetivos de Desenvolvimento" in html
+    assert 'id="aba-integracao"' in html
+    for arq in ("visao-deteccao.jpg", "robo-alertas.jpg", "visao-ponto-onibus.webm"):
+        assert cliente.get(f"/static/midia/{arq}").status_code == 200
 
 
 def test_pagina_inicial_nao_fica_em_cache():
