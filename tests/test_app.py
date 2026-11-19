@@ -30,7 +30,7 @@ def test_aba_conheca_nos_existe():
     assert 'id="sobre-visao"' in html
     assert 'id="sobre-ia"' in html
     assert "aba-integracao" not in html
-    for arq in ("visao-deteccao.jpg", "robo-alertas.jpg", "visao-ponto-onibus.webm"):
+    for arq in ("visao-deteccao.jpg", "visao-rastreio.jpg", "robo-alertas.jpg"):
         assert cliente.get(f"/static/midia/{arq}").status_code == 200
 
 

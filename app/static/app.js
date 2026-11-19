@@ -286,7 +286,6 @@ function simularRobo(minutos) {
   texto.append(
     el("p", "Simulação do robô de alertas", "robo-titulo"),
     el("p", frase),
-    el("p", "É uma simulação com os dados do app. O robô físico (Maker) lê os alertas gerados pela automação da equipe.", "robo-nota"),
   );
   caixa.append(luz, texto);
   return caixa;
