@@ -28,6 +28,7 @@ def test_aba_conheca_nos_existe():
     assert "ODS" in html or "Objetivos de Desenvolvimento" in html
     assert 'id="assistente"' in html
     assert 'id="sobre-visao"' in html
+    assert 'id="sobre-ia"' in html
     assert "aba-integracao" not in html
     for arq in ("visao-deteccao.jpg", "robo-alertas.jpg", "visao-ponto-onibus.webm"):
         assert cliente.get(f"/static/midia/{arq}").status_code == 200

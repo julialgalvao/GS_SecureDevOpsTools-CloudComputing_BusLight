@@ -411,6 +411,7 @@ function configurarAssistente() {
     if (abrirCaixa) campo.focus();
   }
   abrir.addEventListener("click", () => alternar(caixa.hidden));
+  document.querySelectorAll("[data-abrir-assistente]").forEach((b) => b.addEventListener("click", () => alternar(true)));
   fechar.addEventListener("click", () => {
     alternar(false);
     abrir.focus();

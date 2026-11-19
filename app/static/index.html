@@ -9,7 +9,7 @@
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="/static/style.css?v=9">
+  <link rel="stylesheet" href="/static/style.css?v=10">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -182,14 +182,22 @@
         </div>
       </div>
 
+      <h3 class="sobre-titulo">O problema em números</h3>
+      <div class="sobre-numeros" aria-label="O problema em números">
+        <div class="sobre-numero n3"><span class="valor">1 em 8</span><span class="rotulo">esperas passa de 20 minutos</span></div>
+        <div class="sobre-numero n1"><span class="valor">−29%</span><span class="rotulo">de ônibus às 22h, em comparação com as 18h</span></div>
+        <div class="sobre-numero n4"><span class="valor">50 de 144</span><span class="rotulo">pontos medidos são críticos à noite</span></div>
+      </div>
+
       <h3 class="sobre-titulo" id="sobre-frentes">Uma ideia, várias frentes</h3>
       <p class="sobre-intro">O BusLight não é só uma tela. Cada disciplina do semestre cuidou de uma peça, e juntas elas formam o produto inteiro: do dado coletado até o aviso que chega para quem espera no ponto.</p>
       <div class="materias">
         <article class="materia c1"><span class="icone c1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><p class="materia-etiqueta neste">Dados</p><h4>Os números do app</h4><p>Coleta, confere e organiza a previsão dos ônibus, o clima e os bairros. É daqui que vêm os números e as consultas do app.</p></article>
         <article class="materia c2"><span class="icone c2"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10a4 4 0 0 1 0 8z"/></svg></span><p class="materia-etiqueta neste">Nuvem e segurança</p><h4>O app no ar</h4><p>Deixa o site publicado todos os dias, atualiza sozinho, barra senhas vazadas antes de ir ao ar e vigia se algo falhar.</p></article>
+        <article class="materia c3"><span class="icone c3"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg></span><p class="materia-etiqueta proposta">Proposta</p><h4>Assistente do passageiro</h4><p>A ideia é um assistente que responde em linguagem natural, como "qual ônibus pego agora?", usando os dados do app.</p></article>
         <article class="materia c4"><span class="icone c4"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><p class="materia-etiqueta projeto">Visão computacional</p><h4>O ponto que enxerga</h4><p>Um modelo treinado reconhece pessoas, ônibus e recursos de acessibilidade em imagens de pontos de ônibus.</p></article>
         <article class="materia c5"><span class="icone c5"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><p class="materia-etiqueta projeto">Automação e robô</p><h4>Do alerta à luz</h4><p>Uma automação compara a espera prevista com o limite de cada linha, registra o alerta, e um robô físico sinaliza com luzes.</p></article>
-        <article class="materia c7"><span class="icone c7"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><p class="materia-etiqueta projeto">Negócio e impacto</p><h4>Quem participa</h4><p>Passageiro usa de graça. Prefeitura, órgãos de transporte e empresas usam os números para melhorar o transporte.</p></article>
+        <article class="materia c7"><span class="icone c7"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><p class="materia-etiqueta projeto">Negócio e impacto</p><h4>Quem participa</h4><p>Quem usa não paga. Quem decide, paga: prefeitura e órgãos de transporte (painel de pontos críticos), a concessionária dos abrigos (mídia) e empresas com turno noturno (alertas).</p></article>
       </div>
 
       <h3 class="sobre-titulo" id="sobre-visao">Visão computacional: o ponto que enxerga</h3>
@@ -256,10 +264,29 @@
         </div>
       </div>
 
+      <h3 class="sobre-titulo" id="sobre-ia">Inteligência artificial: o assistente do passageiro</h3>
+      <div class="duo">
+        <article class="bloco bloco-solucao">
+          <h4>Já no ar: o assistente do BusLight</h4>
+          <p>O botão "Pergunte ao BusLight" responde com regras simples e com os dados reais do app: o ponto com mais espera à noite, as linhas que mais atrasam e a hora de sair de casa. Ele ainda não usa um modelo de linguagem.</p>
+          <p><button type="button" class="ir-aba" data-abrir-assistente>Abrir o assistente</button></p>
+        </article>
+        <article class="bloco bloco-proposta">
+          <h4>Proposta da equipe: assistente com IA generativa</h4>
+          <p>O próximo passo é trocar as respostas fixas por um modelo de linguagem, que entende perguntas escritas do jeito de cada pessoa e responde em linguagem natural.</p>
+          <ul class="marcas">
+            <li>Consulta os dados do app antes de responder (RAG)</li>
+            <li>Usa as mesmas rotas do app: pontos, linhas, saia de casa e chegada ao vivo</li>
+            <li>Nunca recebe telefone nem localização</li>
+          </ul>
+        </article>
+      </div>
+
       <h3 class="sobre-titulo">Como as peças se conectam</h3>
       <div class="conexoes">
         <article class="conexao ja"><span class="conexao-etiqueta">Já conectado</span><h4>Dados e nuvem</h4><p>O app mostra, no mapa e nas tabelas, os resultados tratados do pipeline de dados.</p></article>
         <article class="conexao mesma"><span class="conexao-etiqueta">Mesma fonte</span><h4>Automação e robô</h4><p>A automação lê a mesma previsão de ônibus que alimenta os dados, e aciona o robô físico.</p></article>
+        <article class="conexao prox"><span class="conexao-etiqueta">Próximo passo</span><h4>Assistente com IA</h4><p>Trocar as respostas fixas do assistente por um modelo de linguagem que consulta os dados do app.</p></article>
         <article class="conexao prox"><span class="conexao-etiqueta">Próximo passo</span><h4>Visão no ponto</h4><p>Levar a contagem de pessoas do modelo para o mapa, mostrando a lotação de cada ponto.</p></article>
       </div>
 
@@ -304,7 +331,7 @@
         <details><summary>Por que a espera à noite não é maior do que de dia?</summary><p>Na média, ela é parecida. O que muda à noite é que circulam bem menos ônibus, então perder um ônibus pesa mais e a pessoa fica mais tempo exposta no ponto.</p></details>
         <details><summary>O app guarda a minha localização?</summary><p>Não. A localização, quando usada, serve só naquele momento e não é gravada. O telefone do alerta é guardado protegido e aparece mascarado.</p></details>
         <details><summary>Quantos dados vocês têm?</summary><p>Por enquanto, 9 coletas em dois dias, nos 144 pontos dos corredores da zona sul. Por isso os números mostram uma tendência, e não uma regra definitiva.</p></details>
-        <details><summary>O assistente usa inteligência artificial?</summary><p>Não. O assistente do BusLight responde com regras simples e com os dados do app. Ele não usa um modelo de linguagem.</p></details>
+        <details><summary>O assistente usa inteligência artificial?</summary><p>Hoje não: ele responde com regras simples e com os dados do app, sem modelo de linguagem. A proposta da equipe é evoluir para um assistente com IA generativa, descrito na seção sobre inteligência artificial desta página.</p></details>
         <details><summary>Funciona sem internet boa?</summary><p>Funciona. O app guarda a última versão da tela e dos dados, e mostra o que já foi carregado quando a conexão cai.</p></details>
       </div>
 
@@ -342,6 +369,6 @@
   </footer>
 
   <script src="/static/vendor/leaflet/leaflet.js"></script>
-  <script src="/static/app.js?v=6"></script>
+  <script src="/static/app.js?v=7"></script>
 </body>
 </html>
