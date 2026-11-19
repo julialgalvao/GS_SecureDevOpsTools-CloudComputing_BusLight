@@ -221,7 +221,7 @@ As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se
 
 **Execução barrada e corrigida (evidência):**
 1. Na branch `prova/token-vazado`, um commit coloca um token falso da SPTrans direto no código → **Gitleaks barra** o pipeline e nada é publicado.
-2. O commit seguinte troca o valor fixo por `os.getenv("SPTRANS_TOKEN")` (o token real fica no GitHub Secrets) → pipeline **verde**.
+2. O commit seguinte troca o valor fixo por `os.getenv("SPTRANS_TOKEN")` (o token real fica fora do código, em variável de ambiente) → pipeline **verde**.
 3. Num vazamento real, apagar o arquivo não basta: o token continua no histórico do Git, então ele é **revogado** no portal da SPTrans e um novo é gerado.
 
 ---
@@ -248,7 +248,7 @@ As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca f
 | Alerta | Condição | Como é demonstrado |
 |---|---|---|
 | `BusLightFora` | `up == 0` por 1 minuto | Desalocar a VM (`az vm deallocate`) e ver o alerta disparar |
-| `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Script `monitoring/disparar_alerta.sh`: pede a chegada ao vivo sem o token da SPTrans e gera respostas 503 |
+| `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Script `monitoring/disparar_alerta.sh`: pede a chegada ao vivo com a VM sem o token da SPTrans, o que gera respostas 503 (com o token configurado, a rota responde 200 e o alerta não dispara) |
 | `BusLightLento` | p95 acima de 1 s por 5 minutos | — |
 | `VMSaturada` | CPU ou memória acima de 90%, ou disco acima de 85%, por 5 minutos | — |
 
@@ -413,7 +413,15 @@ Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://loca
 Sem Docker (por exemplo, no Mac): `brew install prometheus grafana` e depois `MVP_HOST=... METRICS_TOKEN=... ./iniciar_local.sh` (para parar, `./iniciar_local.sh parar`).
 
 **Para disparar os alertas:**
-- `BusLightErrosAltos`: `MVP_URL=http://buslight-gs.northcentralus.cloudapp.azure.com ./disparar_alerta.sh`, que gera respostas `503` por 4 minutos sem derrubar o site.
+- `BusLightErrosAltos`: `MVP_URL=http://buslight-gs.northcentralus.cloudapp.azure.com ./disparar_alerta.sh`, que gera respostas `503` por 4 minutos sem derrubar o site. Só funciona com a VM **sem** o token da SPTrans; com o token configurado, use outra falha (por exemplo, parar o app).
+
+**Ligar a Chegada ao vivo sem recriar a VM:** o token da SPTrans não vai no Terraform nem no repositório. Leia o valor em uma variável do terminal e envie pelo Azure, que grava no `.env` da VM e reinicia os containers:
+```bash
+read -s "T?Token da SPTrans: "; echo
+az vm run-command invoke -g rg-buslight -n vm-buslight --command-id RunShellScript \
+  --scripts 'cd /opt/buslight && sed -i "s/^SPTRANS_TOKEN=.*/SPTRANS_TOKEN=$1/" .env && docker compose up -d --force-recreate && docker compose ps' \
+  --parameters "$T" --query "value[0].message" -o tsv; unset T
+```
 - `BusLightFora`: `az vm deallocate -g rg-buslight -n vm-buslight`, esperar 1 minuto e religar com `az vm start`. O IP estático mantém a URL.
 
 ### 5. Encerrar
