@@ -69,9 +69,9 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | Cidadão e território | Trabalhador da periferia da zona sul de São Paulo (Parelheiros, Grajaú, Capão Redondo, Campo Limpo) que depende de ônibus, principalmente quem sai cedo ou volta tarde; com atenção a mulheres, idosos e pessoas com deficiência |
 | Problema, em uma frase | O passageiro espera tempo demais no ponto, sem saber quando o ônibus chega, muitas vezes à noite e em lugar inseguro |
 | Proposta de valor | Saber quando o ônibus chega e a hora certa de sair de casa, para esperar o mínimo possível no ponto |
-| Arquitetura: componentes | App web + API (este repositório) · Pipeline de dados · Assistente de IA generativa · Visão computacional no ponto · Robô de alertas (RPA) · Totem físico com sensores (Maker) |
+| Arquitetura: componentes | App web + API (este repositório) · Pipeline de dados (repositório de Dados). Demais componentes da GS, entregues nas outras disciplinas da equipe: assistente de IA generativa, visão computacional no ponto, robô de alertas (RPA) e totem físico com sensores (Maker) |
 | Fontes de dados | SPTrans Olho Vivo, Open-Meteo, IBGE e cadastro de usuários simulado |
-| Modelos de IA utilizados | LLM local com RAG e agente (assistente do passageiro) · YOLO customizado (lotação do ponto) |
+| Modelos de IA utilizados | Nas disciplinas de IA e Visão (entrega à parte): LLM local com RAG e agente (assistente do passageiro) · YOLO customizado (lotação do ponto) |
 | URL do MVP e repositórios | MVP: [http://buslight-gs.northcentralus.cloudapp.azure.com](http://buslight-gs.northcentralus.cloudapp.azure.com) · Cloud: [este repositório](https://github.com/julialgalvao/GS_SecureDevOpsTools-CloudComputing_BusLight) · Dados: [GS_BigDataArchitecture-DataIntegration_BusLight](https://github.com/julialgalvao/GS_BigDataArchitecture-DataIntegration_BusLight) |
 | Indicadores de impacto | Minutos de espera evitados, pontos críticos identificados, usuários noturnos atendidos |
 | ODS conectados | 11, 10 e 9 |
@@ -96,7 +96,7 @@ Na periferia de São Paulo, o trabalhador que depende do ônibus espera muito te
 | ODS | Meta | Como o BusLight contribui |
 |---|---|---|
 | **11 – Cidades e comunidades sustentáveis** | 11.2 – transporte seguro e acessível | Torna o transporte público mais previsível e reduz o tempo de exposição no ponto |
-| **10 – Redução das desigualdades** | 10.2 – inclusão de todos | Foca na periferia, onde a espera é maior |
+| **10 – Redução das desigualdades** | 10.2 – inclusão de todos | Foca na periferia, onde a espera pesa mais |
 | **9 – Indústria, inovação e infraestrutura** | 9.1 – infraestrutura confiável e acessível | Infraestrutura de informação em nuvem, segura e reproduzível |
 
 ---
