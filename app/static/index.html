@@ -9,7 +9,7 @@
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="/static/style.css?v=8">
+  <link rel="stylesheet" href="/static/style.css?v=9">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -48,7 +48,6 @@
     <button role="tab" id="aba-linhas" aria-controls="painel-linhas" aria-selected="false" tabindex="-1">Linhas</button>
     <button role="tab" id="aba-alertas" aria-controls="painel-alertas" aria-selected="false" tabindex="-1">Meus alertas</button>
     <button role="tab" id="aba-sobre" aria-controls="painel-sobre" aria-selected="false" tabindex="-1">Conheça-nos</button>
-    <button role="tab" id="aba-integracao" aria-controls="painel-integracao" aria-selected="false" tabindex="-1">Projeto completo</button>
   </nav>
 
   <main id="conteudo">
@@ -67,6 +66,7 @@
         <span class="bolinha amarela" aria-hidden="true"></span> 8 a 15 min
         <span class="bolinha vermelha" aria-hidden="true"></span> mais de 15 min
       </p>
+      <p class="nota-integra">Próximo passo: a visão computacional da equipe vai estimar a lotação de cada ponto aqui. <button type="button" class="ir-aba" data-aba="aba-sobre" data-alvo="sobre-visao">Ver como funciona</button></p>
       <h3>Pontos com maior espera</h3>
       <table>
         <caption class="leitor">Pontos com maior espera média no horário escolhido</caption>
@@ -182,16 +182,85 @@
         </div>
       </div>
 
-      <h3 class="sobre-titulo">Uma ideia, várias frentes</h3>
-      <p class="sobre-intro">O BusLight não é só uma tela. Cada matéria do semestre cuidou de uma peça, e juntas elas formam o produto inteiro: do dado coletado até o aviso que chega para quem espera no ponto.</p>
+      <h3 class="sobre-titulo" id="sobre-frentes">Uma ideia, várias frentes</h3>
+      <p class="sobre-intro">O BusLight não é só uma tela. Cada disciplina do semestre cuidou de uma peça, e juntas elas formam o produto inteiro: do dado coletado até o aviso que chega para quem espera no ponto.</p>
       <div class="materias">
-        <article class="materia c1"><span class="icone c1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><p class="materia-etiqueta neste">Neste app</p><h4>Dados</h4><p>Coleta, confere e organiza a previsão dos ônibus, o clima e os bairros. É daqui que vêm todos os números do app.</p></article>
-        <article class="materia c2"><span class="icone c2"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10a4 4 0 0 1 0 8z"/></svg></span><p class="materia-etiqueta neste">Neste app</p><h4>Nuvem e segurança</h4><p>Deixa o app no ar todos os dias, vigia se algo falhar e protege senhas e dados de quem usa.</p></article>
-        <article class="materia c3"><span class="icone c3"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg></span><p class="materia-etiqueta projeto">No projeto</p><h4>Assistente de IA</h4><p>Um assistente que responde em português perguntas como "qual ônibus pego agora?".</p></article>
-        <article class="materia c4"><span class="icone c4"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><p class="materia-etiqueta projeto">No projeto</p><h4>Visão computacional</h4><p>Uma câmera no ponto estima quantas pessoas estão esperando, para mostrar a lotação.</p></article>
-        <article class="materia c5"><span class="icone c5"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><p class="materia-etiqueta projeto">No projeto</p><h4>Automação de alertas</h4><p>Um robô envia o aviso para quem cadastrou o seu ponto favorito, na hora certa.</p></article>
-        <article class="materia c6"><span class="icone c6"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span><p class="materia-etiqueta projeto">No projeto</p><h4>Totem no ponto</h4><p>Um totem físico, com luz e sensores, leva a informação para quem não tem celular.</p></article>
-        <article class="materia c7"><span class="icone c7"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><p class="materia-etiqueta projeto">No projeto</p><h4>Negócio e impacto</h4><p>Passageiro usa de graça. Prefeitura, órgãos de transporte e empresas usam os números para melhorar o transporte.</p></article>
+        <article class="materia c1"><span class="icone c1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><p class="materia-etiqueta neste">Dados</p><h4>Os números do app</h4><p>Coleta, confere e organiza a previsão dos ônibus, o clima e os bairros. É daqui que vêm os números e as consultas do app.</p></article>
+        <article class="materia c2"><span class="icone c2"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10a4 4 0 0 1 0 8z"/></svg></span><p class="materia-etiqueta neste">Nuvem e segurança</p><h4>O app no ar</h4><p>Deixa o site publicado todos os dias, atualiza sozinho, barra senhas vazadas antes de ir ao ar e vigia se algo falhar.</p></article>
+        <article class="materia c4"><span class="icone c4"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><p class="materia-etiqueta projeto">Visão computacional</p><h4>O ponto que enxerga</h4><p>Um modelo treinado reconhece pessoas, ônibus e recursos de acessibilidade em imagens de pontos de ônibus.</p></article>
+        <article class="materia c5"><span class="icone c5"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><p class="materia-etiqueta projeto">Automação e robô</p><h4>Do alerta à luz</h4><p>Uma automação compara a espera prevista com o limite de cada linha, registra o alerta, e um robô físico sinaliza com luzes.</p></article>
+        <article class="materia c7"><span class="icone c7"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><p class="materia-etiqueta projeto">Negócio e impacto</p><h4>Quem participa</h4><p>Passageiro usa de graça. Prefeitura, órgãos de transporte e empresas usam os números para melhorar o transporte.</p></article>
+      </div>
+
+      <h3 class="sobre-titulo" id="sobre-visao">Visão computacional: o ponto que enxerga</h3>
+      <div class="faixa">
+        <figure class="faixa-img">
+          <img src="/static/midia/visao-deteccao.jpg" alt="Imagem de um ponto de ônibus com caixas coloridas sobre o ônibus e as pessoas, mostrando o que o modelo detectou" width="1200" height="749" loading="lazy">
+          <figcaption>Resultado do modelo em uma imagem de teste.</figcaption>
+        </figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-turquesa">Quem espera, e quem precisa de ajuda</p>
+          <h3>Contar gente e enxergar a acessibilidade</h3>
+          <p>O modelo (YOLO11n) foi treinado para reconhecer pessoas, ônibus, cadeiras de rodas, muletas e bengalas. A ideia é estimar a lotação do ponto e apoiar quem precisa de acessibilidade.</p>
+          <ul class="marcas">
+            <li>Cinco classes, pensadas para a acessibilidade</li>
+            <li>Imagens reunidas e anotadas no Roboflow</li>
+            <li>Treino no Google Colab, 60 épocas</li>
+          </ul>
+        </div>
+      </div>
+      <div class="faixa inversa">
+        <figure class="faixa-img">
+          <video controls preload="metadata" playsinline aria-label="Vídeo de teste do modelo de visão em um ponto de ônibus">
+            <source src="/static/midia/visao-ponto-onibus.webm" type="video/webm">
+            Seu navegador não toca este vídeo.
+          </video>
+          <figcaption>Vídeo de teste do modelo em um ponto de ônibus.</figcaption>
+        </figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-amarela">Em movimento</p>
+          <h3>Do quadro parado ao vídeo</h3>
+          <p>O mesmo modelo foi testado em vídeo: em cada quadro ele marca os ônibus e as pessoas e acompanha cada um pelo ponto.</p>
+          <img class="mini" src="/static/midia/visao-rastreio.jpg" alt="Quadro de vídeo com um ônibus e uma pessoa marcados e numerados pelo modelo" width="1200" height="670" loading="lazy">
+        </div>
+      </div>
+
+      <h3 class="sobre-titulo" id="sobre-robo">Automação e robô: do alerta à luz</h3>
+      <div class="faixa">
+        <figure class="faixa-img">
+          <img src="/static/midia/robo-alertas.jpg" alt="Planilha com alertas gerados pela automação: linha, ponto, espera prevista e mensagem" width="1143" height="589" loading="lazy">
+          <figcaption>Alertas gerados pela automação, na planilha do projeto.</figcaption>
+        </figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-coral">Quando a espera passa do normal</p>
+          <h3>A automação registra, o robô sinaliza</h3>
+          <p>Uma automação consulta a previsão dos ônibus, compara com o tempo normal de espera de cada linha e registra um alerta quando passa do limite. O robô físico lê esses alertas e sinaliza com luzes e movimentos.</p>
+          <ul class="marcas">
+            <li>Limite = espera normal + excedente (exemplo: 15 + 10 = 25 min)</li>
+            <li>Sem alerta repetido para a mesma linha, ponto e dia</li>
+            <li>Cada execução fica registrada em um log</li>
+          </ul>
+          <p><button type="button" class="ir-aba" data-aba="aba-alertas">Ver a simulação em Meus alertas</button></p>
+        </div>
+      </div>
+      <div class="faixa inversa">
+        <figure class="faixa-img">
+          <img src="/static/midia/robo-fluxo.jpg" alt="Tela do Power Automate com os passos que leem as linhas cadastradas e executam a consulta" width="1295" height="847" loading="lazy">
+          <figcaption>O fluxo da automação, passo a passo.</figcaption>
+        </figure>
+        <div class="faixa-texto">
+          <p class="faixa-etiqueta etiqueta-amarela">Como decide</p>
+          <h3>Um fluxo que dá para acompanhar</h3>
+          <p>O fluxo lê as linhas cadastradas, consulta a previsão, converte a resposta e grava previsões, alertas e registros de execução. O fluxograma completo e os testes estão no repositório da equipe.</p>
+          <p><a class="link-externo" href="https://github.com/linesiscl/GS-BusLight" target="_blank" rel="noopener">Ver o repositório da automação</a></p>
+        </div>
+      </div>
+
+      <h3 class="sobre-titulo">Como as peças se conectam</h3>
+      <div class="conexoes">
+        <article class="conexao ja"><span class="conexao-etiqueta">Já conectado</span><h4>Dados e nuvem</h4><p>O app mostra, no mapa e nas tabelas, os resultados tratados do pipeline de dados.</p></article>
+        <article class="conexao mesma"><span class="conexao-etiqueta">Mesma fonte</span><h4>Automação e robô</h4><p>A automação lê a mesma previsão de ônibus que alimenta os dados, e aciona o robô físico.</p></article>
+        <article class="conexao prox"><span class="conexao-etiqueta">Próximo passo</span><h4>Visão no ponto</h4><p>Levar a contagem de pessoas do modelo para o mapa, mostrando a lotação de cada ponto.</p></article>
       </div>
 
       <h3 class="sobre-titulo">O que você encontra no app</h3>
@@ -235,6 +304,7 @@
         <details><summary>Por que a espera à noite não é maior do que de dia?</summary><p>Na média, ela é parecida. O que muda à noite é que circulam bem menos ônibus, então perder um ônibus pesa mais e a pessoa fica mais tempo exposta no ponto.</p></details>
         <details><summary>O app guarda a minha localização?</summary><p>Não. A localização, quando usada, serve só naquele momento e não é gravada. O telefone do alerta é guardado protegido e aparece mascarado.</p></details>
         <details><summary>Quantos dados vocês têm?</summary><p>Por enquanto, 9 coletas em dois dias, nos 144 pontos dos corredores da zona sul. Por isso os números mostram uma tendência, e não uma regra definitiva.</p></details>
+        <details><summary>O assistente usa inteligência artificial?</summary><p>Não. O assistente do BusLight responde com regras simples e com os dados do app. Ele não usa um modelo de linguagem.</p></details>
         <details><summary>Funciona sem internet boa?</summary><p>Funciona. O app guarda a última versão da tela e dos dados, e mostra o que já foi carregado quando a conexão cai.</p></details>
       </div>
 
@@ -244,96 +314,27 @@
         <p class="equipe-escola">FIAP · Engenharia de Software · Global Solution 2026.2 (CitizenTech)</p>
       </div>
     </section>
-    <section id="painel-integracao" role="tabpanel" aria-labelledby="aba-integracao" hidden>
-      <div class="sobre-abertura">
-        <p class="sobre-chamada">Projeto completo</p>
-        <h2>Uma ideia, <em>cada disciplina</em> com a sua peça.</h2>
-        <p class="sobre-lead">
-          O BusLight nasceu na Global Solution e junta o trabalho de várias disciplinas. Aqui você vê o que cada uma construiu,
-          com as imagens e os testes reais da equipe, e como as peças se encaixam.
-        </p>
-      </div>
-
-      <h3 class="sobre-titulo">Visão computacional</h3>
-      <div class="faixa">
-        <figure class="faixa-img">
-          <img src="/static/midia/visao-deteccao.jpg" alt="Imagem de um ponto de ônibus com caixas coloridas sobre o ônibus e as pessoas, mostrando o que o modelo detectou" width="1200" height="749" loading="lazy">
-          <figcaption>Resultado do modelo em uma imagem de teste.</figcaption>
-        </figure>
-        <div class="faixa-texto">
-          <p class="faixa-etiqueta etiqueta-turquesa">O ponto que enxerga</p>
-          <h3>Quem está esperando, e quem precisa de ajuda</h3>
-          <p>Um modelo de visão computacional (YOLO11n) foi treinado para reconhecer pessoas, ônibus, cadeiras de rodas, muletas e bengalas em imagens de pontos de ônibus. A ideia é estimar a lotação do ponto e apoiar a acessibilidade.</p>
-          <ul class="marcas">
-            <li>Cinco classes, pensadas para a acessibilidade</li>
-            <li>Imagens reunidas e anotadas no Roboflow</li>
-            <li>Treino no Google Colab, 60 épocas</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="faixa inversa">
-        <figure class="faixa-img">
-          <video controls preload="metadata" playsinline aria-label="Vídeo de teste do modelo de visão em um ponto de ônibus">
-            <source src="/static/midia/visao-ponto-onibus.webm" type="video/webm">
-            Seu navegador não toca este vídeo.
-          </video>
-          <figcaption>Vídeo de teste do modelo em um ponto de ônibus.</figcaption>
-        </figure>
-        <div class="faixa-texto">
-          <p class="faixa-etiqueta etiqueta-amarela">Em movimento</p>
-          <h3>Do quadro parado ao vídeo</h3>
-          <p>O mesmo modelo foi testado em vídeo. Em cada quadro ele marca os ônibus e as pessoas, e acompanha cada um deles pelo ponto.</p>
-          <img class="mini" src="/static/midia/visao-rastreio.jpg" alt="Quadro de vídeo com um ônibus e uma pessoa marcados e numerados pelo modelo" width="1200" height="670" loading="lazy">
-        </div>
-      </div>
-
-      <h3 class="sobre-titulo">Automação e robô</h3>
-      <div class="faixa">
-        <figure class="faixa-img">
-          <img src="/static/midia/robo-alertas.jpg" alt="Planilha com alertas gerados pela automação: linha, ponto, espera prevista e mensagem" width="1143" height="589" loading="lazy">
-          <figcaption>Alertas gerados pela automação, na planilha do projeto.</figcaption>
-        </figure>
-        <div class="faixa-texto">
-          <p class="faixa-etiqueta etiqueta-coral">Do alerta ao robô</p>
-          <h3>Quando a espera passa do normal, o robô avisa</h3>
-          <p>Uma automação consulta a previsão dos ônibus, compara com o tempo normal de espera de cada linha e registra um alerta quando passa do limite. O robô físico lê esses alertas e sinaliza com luzes e movimentos.</p>
-          <ul class="marcas">
-            <li>Limite = espera normal + excedente (exemplo: 15 + 10 = 25 min)</li>
-            <li>Sem alerta repetido para a mesma linha, ponto e dia</li>
-            <li>Cada execução fica registrada em um log</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="faixa inversa">
-        <figure class="faixa-img">
-          <img src="/static/midia/robo-fluxo.jpg" alt="Tela do Power Automate com os passos que leem as linhas cadastradas e executam a consulta" width="1295" height="847" loading="lazy">
-          <figcaption>O fluxo da automação, passo a passo.</figcaption>
-        </figure>
-        <div class="faixa-texto">
-          <p class="faixa-etiqueta etiqueta-amarela">Como decide</p>
-          <h3>Um fluxo que qualquer pessoa consegue acompanhar</h3>
-          <p>O fluxo lê as linhas cadastradas, consulta a previsão, converte a resposta e grava previsões, alertas e registros de execução. O fluxograma completo e os testes estão no repositório da equipe.</p>
-          <p><a class="link-externo" href="https://github.com/linesiscl/GS-BusLight" target="_blank" rel="noopener">Ver o repositório da automação</a></p>
-        </div>
-      </div>
-
-      <h3 class="sobre-titulo">Dados, nuvem e negócio</h3>
-      <div class="materias">
-        <article class="materia c1"><span class="icone c1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><p class="materia-etiqueta neste">Dados</p><h4>Os números do app</h4><p>Coleta automática da previsão dos ônibus, do clima e dos bairros, tratamento dos dados e cinco consultas que respondem às perguntas do passageiro.</p></article>
-        <article class="materia c2"><span class="icone c2"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10a4 4 0 0 1 0 8z"/></svg></span><p class="materia-etiqueta neste">Nuvem e segurança</p><h4>O app no ar</h4><p>O site fica publicado o tempo todo, é atualizado de forma automática, barra senhas vazadas antes de ir ao ar e é monitorado com alerta.</p></article>
-        <article class="materia c7"><span class="icone c7"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><p class="materia-etiqueta projeto">Negócio</p><h4>Quem participa</h4><p>O passageiro usa de graça. Prefeitura e órgãos de transporte usam os números para gerir linhas e pontos críticos, e empresas com turno noturno e de mídia em ponto também se beneficiam.</p></article>
-      </div>
-
-      <h3 class="sobre-titulo">Como as peças se conectam</h3>
-      <div class="conexoes">
-        <article class="conexao ja"><span class="conexao-etiqueta">Já conectado</span><h4>Dados e nuvem</h4><p>O app mostra, no mapa e nas tabelas, os resultados tratados do pipeline de dados.</p></article>
-        <article class="conexao mesma"><span class="conexao-etiqueta">Mesma fonte</span><h4>Automação e robô</h4><p>A automação lê a mesma previsão de ônibus que alimenta os dados, e aciona o robô físico.</p></article>
-        <article class="conexao prox"><span class="conexao-etiqueta">Próximo passo</span><h4>Visão no ponto</h4><p>Levar a contagem de pessoas do modelo para o mapa, mostrando a lotação de cada ponto.</p></article>
-      </div>
-    </section>
   </main>
+
+  <aside id="assistente" class="assistente" aria-label="Assistente do BusLight" hidden>
+    <button type="button" id="assistente-abrir" class="assistente-abrir" aria-expanded="false" aria-controls="assistente-caixa">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg><span>Pergunte ao BusLight</span>
+    </button>
+    <div id="assistente-caixa" class="assistente-caixa" hidden>
+      <div class="assistente-topo">
+        <strong>Assistente do BusLight</strong>
+        <button type="button" id="assistente-fechar" class="assistente-fechar" aria-label="Fechar o assistente">×</button>
+      </div>
+      <p class="assistente-aviso">Respondo com os dados deste app. Não uso modelo de IA.</p>
+      <div id="assistente-conversa" class="assistente-conversa" aria-live="polite"></div>
+      <div id="assistente-perguntas" class="assistente-perguntas"></div>
+      <form id="assistente-form" class="assistente-form">
+        <label for="assistente-texto" class="leitor">Escreva sua pergunta</label>
+        <input id="assistente-texto" type="text" maxlength="120" placeholder="Escreva uma pergunta" autocomplete="off">
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </aside>
 
   <footer class="rodape">
     <p>Global Solution 2026.2 · FIAP · Dados: SPTrans Olho Vivo, Open-Meteo e IBGE · Mapa © colaboradores do OpenStreetMap</p>
@@ -341,6 +342,6 @@
   </footer>
 
   <script src="/static/vendor/leaflet/leaflet.js"></script>
-  <script src="/static/app.js?v=5"></script>
+  <script src="/static/app.js?v=6"></script>
 </body>
 </html>

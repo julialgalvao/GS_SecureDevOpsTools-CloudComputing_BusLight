@@ -51,12 +51,16 @@ function configurarAbas() {
     });
     aba.focus();
     if (aba.id === "aba-mapa" && mapa) mapa.invalidateSize();
+    const ass = document.getElementById("assistente");
+    if (ass) ass.hidden = aba.id !== "aba-sobre";
   }
   // botões da aba Conheça-nos que levam para outra aba
   document.querySelectorAll(".ir-aba").forEach((b) => {
     b.addEventListener("click", () => {
       ativar(document.getElementById(b.dataset.aba));
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const secao = b.dataset.alvo && document.getElementById(b.dataset.alvo);
+      if (secao) secao.scrollIntoView({ behavior: "smooth" });
+      else window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
   abas.forEach((aba, i) => {
@@ -175,6 +179,8 @@ async function mostrarChegada(ev) {
       lista.append(el("li", `${c.horario} – ${c.linha} (${c.destino})${acessivel}`));
     });
     cartao.append(lista);
+    const acess = dados.chegadas.filter((c) => c.acessivel).length;
+    cartao.append(el("p", `${acess} de ${dados.chegadas.length} ônibus previstos são acessíveis.`, "acessiveis"));
   }
   alvo.append(cartao);
 }
@@ -265,6 +271,27 @@ async function carregarAlertas() {
   if (dados.length) mostrarAlerta(dados[0].sk_usuario);
 }
 
+function simularRobo(minutos) {
+  // mesma régua de cores do mapa; é uma simulação com os dados do app, não o robô físico
+  const nivel = minutos > 15 ? "alta" : minutos > 8 ? "media" : "ok";
+  const frase = {
+    ok: "Espera dentro do normal: o robô mostraria a luz verde.",
+    media: "Espera acima do ideal: o robô mostraria a luz amarela.",
+    alta: "Espera longa: o robô mostraria a luz vermelha e sinalizaria o alerta.",
+  }[nivel];
+  const caixa = el("div", null, "robo-sim");
+  const luz = el("span", null, `luz ${nivel}`);
+  luz.setAttribute("aria-hidden", "true");
+  const texto = el("div");
+  texto.append(
+    el("p", "Simulação do robô de alertas", "robo-titulo"),
+    el("p", frase),
+    el("p", "É uma simulação com os dados do app. O robô físico lê os alertas gerados pela automação da equipe.", "robo-nota"),
+  );
+  caixa.append(luz, texto);
+  return caixa;
+}
+
 async function mostrarAlerta(id) {
   const { ok, dados } = await api(`/api/alertas/${encodeURIComponent(id)}`);
   const alvo = document.getElementById("resultado-alerta");
@@ -278,6 +305,7 @@ async function mostrarAlerta(id) {
   );
   if (dados.espera_media_min) cartao.append(el("p", `Espera média nesse horário: ${dados.espera_media_min} min`));
   alvo.append(cartao);
+  if (dados.espera_media_min) alvo.append(simularRobo(dados.espera_media_min));
 }
 
 // ---------------------------------------------------------------- offline
@@ -292,8 +320,128 @@ function configurarOffline() {
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");
 }
 
+// ---------------------------------------------------------------- assistente do BusLight
+// Responde com regras e com os dados do app. Não usa modelo de linguagem.
+const PERGUNTAS = [
+  { id: "noite", rotulo: "Qual ponto tem mais espera à noite?" },
+  { id: "linhas", rotulo: "Quais linhas mais atrasam?" },
+  { id: "sair", rotulo: "A que horas devo sair de casa?" },
+  { id: "espera", rotulo: "O que é espera média?" },
+  { id: "robo", rotulo: "Como o robô avisa?" },
+  { id: "visao", rotulo: "O que a visão computacional faz?" },
+  { id: "local", rotulo: "O app guarda minha localização?" },
+];
+
+const PALAVRAS = [
+  ["noite", ["noite", "noturn", "mais espera", "pior ponto"]],
+  ["linhas", ["linha", "atras"]],
+  ["sair", ["sair", "saio", "casa", "horas"]],
+  ["espera", ["média", "media", "significa"]],
+  ["robo", ["robô", "robo", "alerta", "luz"]],
+  ["visao", ["visão", "visao", "câmera", "camera", "yolo", "lotação", "lotacao"]],
+  ["local", ["local", "privacidade", "lgpd", "telefone"]],
+];
+
+function mensagem(texto, quem) {
+  const conversa = document.getElementById("assistente-conversa");
+  const m = el("div", texto, `msg ${quem}`);
+  conversa.append(m);
+  conversa.scrollTop = conversa.scrollHeight;
+  return m;
+}
+
+async function responder(id) {
+  if (id === "noite") {
+    const { ok, dados } = await api("/api/pontos?faixa=noite");
+    if (!ok || !dados.length) return mensagem("Não consegui buscar os pontos agora.", "bot");
+    const top = dados.slice(0, 3).map((p) => `${p.nome} (${p.espera_media_min} min)`).join("; ");
+    return mensagem(`À noite, os pontos com mais espera são: ${top}.`, "bot");
+  }
+  if (id === "linhas") {
+    const { ok, dados } = await api("/api/linhas?limite=3");
+    if (!ok || !dados.length) return mensagem("Não consegui buscar as linhas agora.", "bot");
+    const top = dados.map((l) => `${l.letreiro} (${l.espera_media_min} min)`).join("; ");
+    return mensagem(`As linhas com maior espera média são: ${top}.`, "bot");
+  }
+  if (id === "sair") {
+    const m = mensagem("Escolha o ponto e eu calculo, considerando 5 minutos de caminhada e o horário da noite.", "bot");
+    const select = el("select");
+    select.setAttribute("aria-label", "Ponto");
+    pontos.slice(0, 200).forEach((p) => {
+      const op = el("option", p.nome);
+      op.value = p.codigo_parada;
+      select.append(op);
+    });
+    const botao = el("button", "Calcular");
+    botao.type = "button";
+    botao.addEventListener("click", async () => {
+      const r = await api(`/api/saia-de-casa?ponto=${select.value}&faixa=noite&caminhada_min=5`);
+      if (!r.ok) return mensagem("Esse ponto não tem dados à noite. Tente outro.", "bot");
+      const melhor = r.dados.linhas[0];
+      mensagem(`Saia ${r.dados.antecedencia_recomendada_min} min antes do horário do ônibus. Sem o aviso, quem chega sem saber espera ${melhor.espera_sem_aviso_min} min pela linha ${melhor.linha}; com o aviso, ${melhor.espera_com_aviso_min} min.`, "bot");
+    });
+    m.append(el("br"), select, el("br"), botao);
+    return m;
+  }
+  const fixas = {
+    espera: "É o tempo, em minutos, entre a chegada de um ônibus de uma linha e o próximo, no ponto e no horário escolhidos, calculado com as coletas que fizemos.",
+    robo: "Uma automação compara a espera prevista com o limite de cada linha (espera normal mais um excedente) e registra um alerta. O robô físico lê os alertas e sinaliza com luzes e movimentos. Veja a simulação na aba Meus alertas.",
+    visao: "Um modelo (YOLO11n) foi treinado para reconhecer pessoas, ônibus, cadeiras de rodas, muletas e bengalas em imagens de pontos de ônibus, para estimar a lotação e apoiar a acessibilidade. Os resultados estão nesta página.",
+    local: "Não. A localização, quando usada, serve só naquele momento e não é gravada. O telefone do alerta é guardado protegido e aparece mascarado.",
+  };
+  return mensagem(fixas[id], "bot");
+}
+
+function configurarAssistente() {
+  const raiz = document.getElementById("assistente");
+  if (!raiz) return;
+  const caixa = document.getElementById("assistente-caixa");
+  const abrir = document.getElementById("assistente-abrir");
+  const fechar = document.getElementById("assistente-fechar");
+  const botoes = document.getElementById("assistente-perguntas");
+  const form = document.getElementById("assistente-form");
+  const campo = document.getElementById("assistente-texto");
+
+  function alternar(abrirCaixa) {
+    caixa.hidden = !abrirCaixa;
+    abrir.setAttribute("aria-expanded", String(abrirCaixa));
+    if (abrirCaixa && !document.getElementById("assistente-conversa").children.length) {
+      mensagem("Oi! Eu sou o assistente do BusLight. Respondo com os dados deste app. Escolha uma pergunta ou escreva a sua.", "bot");
+    }
+    if (abrirCaixa) campo.focus();
+  }
+  abrir.addEventListener("click", () => alternar(caixa.hidden));
+  fechar.addEventListener("click", () => {
+    alternar(false);
+    abrir.focus();
+  });
+
+  PERGUNTAS.forEach((p) => {
+    const b = el("button", p.rotulo);
+    b.type = "button";
+    b.addEventListener("click", () => {
+      mensagem(p.rotulo, "voce");
+      responder(p.id);
+    });
+    botoes.append(b);
+  });
+
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const texto = campo.value.trim();
+    if (!texto) return;
+    mensagem(texto, "voce");
+    campo.value = "";
+    const t = texto.toLowerCase();
+    const achou = PALAVRAS.find(([, termos]) => termos.some((x) => t.includes(x)));
+    if (achou) responder(achou[0]);
+    else mensagem("Não entendi essa pergunta. Tente uma das opções abaixo.", "bot");
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   configurarAbas();
+  configurarAssistente();
   configurarOffline();
   carregarResumo();
   carregarMapa("");
