@@ -181,7 +181,7 @@ A infraestrutura de produção está em [`infra-azure/`](infra-azure/) e cria **
 - Porta 22 **nunca** aberta para `0.0.0.0/0`: não há SSH nem outra porta administrativa. A VM busca a versão nova sozinha, e nada entra por fora.
 - Região, tamanho da VM e nome DNS em variáveis (`variables.tf`).
 
-**Detalhes de segurança a mais:** nenhuma identidade nem credencial na VM, disco gerenciado com criptografia do Azure, tags padrão e o Terraform varrido pelo **Trivy** no pipeline (a única exceção, o site público na porta 80, está justificada no [`.trivyignore`](.trivyignore)).
+**Detalhes de segurança a mais:** nenhuma identidade nem credencial na VM, disco gerenciado com a criptografia em repouso padrão do Azure, tags padrão e o Terraform varrido pelo **Trivy** no pipeline (a única exceção, o site público na porta 80, está justificada no [`.trivyignore`](.trivyignore)).
 
 **Restrições da assinatura Azure for Students que moldaram a infraestrutura**
 - Uma política da assinatura só permite criar recursos em `eastus2`, `canadacentral`, `northcentralus`, `centralus` e `southcentralus`.
@@ -204,7 +204,7 @@ Workflow em [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml)
 |---|---|---|
 | 1. Segredos | **Gitleaks** | Encontra token, chave ou senha no código ou no histórico |
 | 2. Código (SAST) | **Semgrep** (`p/security-audit`, `p/python`, `p/dockerfile`) | Encontra padrão de código vulnerável |
-| 3. Testes | **pytest** (14 testes da API, incluindo LGPD e controle de acesso) | Algum teste falha |
+| 3. Testes | **pytest** (15 testes da API, incluindo LGPD e controle de acesso) | Algum teste falha |
 | 4. Infra como código | **Trivy** (scan de configuração) | Terraform ou Dockerfile com configuração insegura `HIGH`/`CRITICAL` |
 | 5. Terraform | `terraform fmt -check` e `terraform validate`, nas duas pastas de infra | Código da infra mal formatado ou inválido |
 | 6. Build | Docker Buildx | A imagem não compila |
@@ -221,7 +221,7 @@ As etapas 1 a 5 rodam em paralelo; build, publicação e deploy só acontecem se
 
 **Execução barrada e corrigida (evidência):**
 1. Na branch `prova/token-vazado`, um commit coloca um token falso da SPTrans direto no código → **Gitleaks barra** o pipeline e nada é publicado.
-2. O commit seguinte troca o valor fixo por `os.getenv("SPTRANS_TOKEN")` (o token real fica no GitHub Secrets) → pipeline **verde**.
+2. O commit seguinte troca o valor fixo por `os.getenv("SPTRANS_TOKEN")` (o token real fica fora do código, em variável de ambiente) → pipeline **verde**.
 3. Num vazamento real, apagar o arquivo não basta: o token continua no histórico do Git, então ele é **revogado** no portal da SPTrans e um novo é gerado.
 
 ---
@@ -248,7 +248,7 @@ As duas rotas só respondem com o `METRICS_TOKEN`; as portas 8000 e 9100 nunca f
 | Alerta | Condição | Como é demonstrado |
 |---|---|---|
 | `BusLightFora` | `up == 0` por 1 minuto | Desalocar a VM (`az vm deallocate`) e ver o alerta disparar |
-| `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Script `monitoring/disparar_alerta.sh`: pede a chegada ao vivo sem o token da SPTrans e gera respostas 503 |
+| `BusLightErrosAltos` | Taxa de 5xx acima de 5% por 2 minutos | Script `monitoring/disparar_alerta.sh`: pede a chegada ao vivo com a VM sem o token da SPTrans, o que gera respostas 503 (com o token configurado, a rota responde 200 e o alerta não dispara) |
 | `BusLightLento` | p95 acima de 1 s por 5 minutos | — |
 | `VMSaturada` | CPU ou memória acima de 90%, ou disco acima de 85%, por 5 minutos | — |
 
@@ -262,7 +262,7 @@ O BusLight roda em uma VM, ou seja, em **IaaS**: o Azure cuida da base, e a equi
 |---|---|
 | Data centers, hardware e rede física | Sistema operacional da VM e suas atualizações |
 | Hipervisor e isolamento entre clientes | Docker, imagens e dependências (verificadas pelo Trivy) |
-| Disponibilidade da região e criptografia do disco gerenciado | Regras do NSG, portas abertas e acessos |
+| Disponibilidade da região e criptografia em repouso do disco gerenciado (padrão do Azure) | Regras do NSG, portas abertas e acessos |
 | Segurança física das instalações | Código da aplicação (verificado pelo Semgrep) |
 | | Segredos e credenciais (verificados pelo Gitleaks, guardados em Secrets) |
 | | Dados dos usuários e conformidade com a LGPD |
@@ -294,7 +294,7 @@ Estimativa mensal para a VM ligada 24 horas por dia na região `northcentralus`.
 | Prometheus e Grafana | Rodam fora da nuvem | US$ 0,00 |
 | **Total** | | **~ US$ 13 por mês** |
 
-O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que dá **perto de US$ 6**. O valor sai do crédito educacional da assinatura Azure for Students, e um alerta de orçamento avisa antes de o crédito acabar. Depois da correção, `terraform destroy` apaga tudo e o custo vai a zero. Para reduzir ainda mais, dá para desalocar a VM fora do horário de uso, e o IP estático mantém o endereço.
+O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que dá **perto de US$ 6**. O custo real medido no Azure até 19/11 foi de **R$ 3,68** (VM, disco, IP e rede, em três dias de uso). O valor sai do crédito educacional da assinatura Azure for Students, e um alerta de orçamento avisa antes de o crédito acabar. Depois da correção, `terraform destroy` apaga tudo e o custo vai a zero. Para reduzir ainda mais, dá para desalocar a VM fora do horário de uso, e o IP estático mantém o endereço.
 
 ---
 
@@ -314,7 +314,7 @@ O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que d
 
 | Extra | Por que importa |
 |---|---|
-| Testes automatizados no pipeline (14 testes: o telefone nunca sai sem máscara e o cadastro não pode ser listado trocando o id na URL — OWASP A01) | O deploy só acontece se a API funciona e respeita a LGPD |
+| Testes automatizados no pipeline (15 testes: o telefone nunca sai sem máscara e o cadastro não pode ser listado trocando o id na URL — OWASP A01) | O deploy só acontece se a API funciona e respeita a LGPD |
 | Trivy também no Terraform e no Dockerfile, com exceções justificadas | A infraestrutura passa pela mesma barreira de segurança que o código |
 | Actions fixadas por SHA, permissões mínimas e Dependabot | Protege o próprio pipeline contra ataques de cadeia de suprimentos |
 | Teste de fumaça depois do deploy, conferindo o commit que está no ar | O pipeline só fica verde se o MVP responde na URL pública com a versão certa |
@@ -322,7 +322,7 @@ O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que d
 | node-exporter na VM (pelo nginx, com token) | Saturação da máquina inteira, não só do processo do app |
 | Sem SSH: em vez de restringir a porta 22 a um IP, ela nem existe; o deploy é por *pull*, sem acesso de entrada | Menos superfície de ataque |
 | nginx com CSP, cabeçalhos de segurança, limite de requisições e `/metrics` protegido por token | Endurecimento da aplicação exposta na internet |
-| Container somente leitura, sem capabilities, VM sem identidade e disco criptografado | Reduz o estrago se algo for comprometido |
+| Container somente leitura, sem capabilities, VM sem identidade e disco gerenciado com criptografia em repouso padrão | Reduz o estrago se algo for comprometido |
 | Dashboard do Grafana e alertas versionados como código | Monitoramento reproduzível |
 | Site acessível (contraste, teclado, leitor de tela) e offline (PWA) | Princípios "acessível de verdade" e "resiliente ao mundo real" da GS |
 | Ambiente pronto no GitHub Codespaces | Qualquer avaliador reproduz tudo no navegador |
@@ -341,7 +341,7 @@ O MVP precisa ficar no ar por cerca de 2 semanas (entrega e correção), o que d
 │   ├── static/                    # front-end acessível (PWA, funciona offline) + Leaflet
 │   ├── data/                      # exportação JSON da camada Ouro (repositório de Dados)
 │   └── requirements.txt
-├── tests/test_app.py              # 14 testes da API (rodam no pipeline)
+├── tests/test_app.py              # 15 testes da API (rodam no pipeline)
 ├── infra-azure/                   # produção: Terraform do Azure
 │   ├── versions.tf                # providers azurerm e tls
 │   ├── main.tf                    # resource group, rede, NSG, IP estático, NIC e VM
@@ -413,7 +413,15 @@ Prometheus em `http://localhost:9090` (aba **Alerts**) e Grafana em `http://loca
 Sem Docker (por exemplo, no Mac): `brew install prometheus grafana` e depois `MVP_HOST=... METRICS_TOKEN=... ./iniciar_local.sh` (para parar, `./iniciar_local.sh parar`).
 
 **Para disparar os alertas:**
-- `BusLightErrosAltos`: `MVP_URL=http://buslight-gs.northcentralus.cloudapp.azure.com ./disparar_alerta.sh`, que gera respostas `503` por 4 minutos sem derrubar o site.
+- `BusLightErrosAltos`: `MVP_URL=http://buslight-gs.northcentralus.cloudapp.azure.com ./disparar_alerta.sh`, que gera respostas `503` por 4 minutos sem derrubar o site. Só funciona com a VM **sem** o token da SPTrans; com o token configurado, use outra falha (por exemplo, parar o app).
+
+**Ligar a Chegada ao vivo sem recriar a VM:** o token da SPTrans não vai no Terraform nem no repositório. Leia o valor em uma variável do terminal e envie pelo Azure, que grava no `.env` da VM e reinicia os containers:
+```bash
+read -s "T?Token da SPTrans: "; echo
+az vm run-command invoke -g rg-buslight -n vm-buslight --command-id RunShellScript \
+  --scripts 'cd /opt/buslight && sed -i "s/^SPTRANS_TOKEN=.*/SPTRANS_TOKEN=$1/" .env && docker compose up -d --force-recreate && docker compose ps' \
+  --parameters "$T" --query "value[0].message" -o tsv; unset T
+```
 - `BusLightFora`: `az vm deallocate -g rg-buslight -n vm-buslight`, esperar 1 minuto e religar com `az vm start`. O IP estático mantém a URL.
 
 ### 5. Encerrar
